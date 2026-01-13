@@ -198,7 +198,7 @@ export const Chatbot = () => {
               >
                 Raporlar
               </Button>
-              <Button
+              {/* <Button
                 variant="outline"
                 size="sm"
                 className="h-8 text-xs rounded-xl border-border/40 hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-all duration-200 bg-background/50"
@@ -209,7 +209,7 @@ export const Chatbot = () => {
                 }}
               >
                 Premium
-              </Button>
+              </Button> */}
             </div>
 
             {/* Input Area */}

@@ -69,51 +69,75 @@ const Index = () => {
           {/* Left Column - Main Content */}
           <div className="lg:col-span-8 space-y-4 lg:space-y-5">
             {/* Main Stats Card */}
-            {getCardVisibility("card-visits-chart") && <VisitsChart />}
+            {getCardVisibility("card-visits-chart") && (
+              <div data-card-id="card-visits-chart">
+                <VisitsChart />
+              </div>
+            )}
 
             {/* Tablet: Important widgets row */}
             {(getCardVisibility("card-quick-actions") || getCardVisibility("card-weekly-stats")) && (
               <div className="grid grid-cols-2 gap-4 lg:hidden">
-                {getCardVisibility("card-quick-actions") && <QuickActions />}
+                {getCardVisibility("card-quick-actions") && (
+                  <div data-card-id="card-quick-actions">
+                    <QuickActions />
+                  </div>
+                )}
                 {getCardVisibility("card-weekly-stats") && (
-                  <WeeklyStatsCard 
-                    predictedVisits={120}
-                    confidence={85}
-                    peakDay="Cumartesi"
-                    peakHour="14:00-16:00"
-                  />
+                  <div data-card-id="card-weekly-stats">
+                    <WeeklyStatsCard 
+                      predictedVisits={120}
+                      confidence={85}
+                      peakDay="Cumartesi"
+                      peakHour="14:00-16:00"
+                    />
+                  </div>
                 )}
               </div>
             )}
 
             {/* Active Campaigns with Live Feed - Side by side */}
             {getCardVisibility("card-active-campaigns") && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 items-stretch">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 items-stretch" data-card-id="card-active-campaigns">
                 <ActiveCampaignsCard />
                 <LiveFeed />
               </div>
             )}
 
             {/* Churn Alert - Premium only, otherwise show locked version */}
-            {getCardVisibility("card-churn-alert") && (isPremium ? <ChurnAlert /> : <LockedChurnAlert />)}
+            {getCardVisibility("card-churn-alert") && (
+              <div data-card-id="card-churn-alert">
+                {isPremium ? <ChurnAlert /> : <LockedChurnAlert />}
+              </div>
+            )}
           </div>
 
           {/* Right Column - Desktop Only Sidebar */}
           <div className="hidden lg:block lg:col-span-4 space-y-5">
             {/* Trial Progress - Top priority for non-premium */}
-            {!isPremium && getCardVisibility("card-trial-progress") && <TrialProgress current={47} limit={50} />}
+            {!isPremium && getCardVisibility("card-trial-progress") && (
+              <div data-card-id="card-trial-progress">
+                <TrialProgress current={47} limit={50} />
+              </div>
+            )}
             
             {/* Quick Actions */}
-            {getCardVisibility("card-quick-actions") && <QuickActions />}
+            {getCardVisibility("card-quick-actions") && (
+              <div data-card-id="card-quick-actions">
+                <QuickActions />
+              </div>
+            )}
             
             {/* Weekly Stats Card */}
             {getCardVisibility("card-weekly-stats") && (
-              <WeeklyStatsCard 
-                predictedVisits={120}
-                confidence={85}
-                peakDay="Cumartesi"
-                peakHour="14:00-16:00"
-              />
+              <div data-card-id="card-weekly-stats">
+                <WeeklyStatsCard 
+                  predictedVisits={120}
+                  confidence={85}
+                  peakDay="Cumartesi"
+                  peakHour="14:00-16:00"
+                />
+              </div>
             )}
             
           </div>

@@ -2,6 +2,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AlertCircle, Crown, Sparkles } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   Tooltip,
   TooltipContent,
@@ -15,6 +16,7 @@ interface TrialProgressProps {
 }
 
 export const TrialProgress = ({ current, limit }: TrialProgressProps) => {
+  const navigate = useNavigate();
   const percentage = (current / limit) * 100;
   const isCritical = current >= 48;
   const isNearingLimit = current >= 40;
@@ -77,7 +79,8 @@ export const TrialProgress = ({ current, limit }: TrialProgressProps) => {
       
       <Progress value={percentage} className={cn("h-1.5 transition-all", getProgressColor())} />
       
-      <Button 
+      {/* <Button 
+        onClick={() => navigate("/settings?tab=billing")}
         className={cn(
           "w-full mt-3 h-8 text-xs font-semibold rounded-lg transition-all relative overflow-hidden group",
           isCritical 
@@ -98,7 +101,7 @@ export const TrialProgress = ({ current, limit }: TrialProgressProps) => {
         <p className="text-[10px] text-muted-foreground mt-2 text-center">
           Premium'a yükselterek sınırsız müşteri ekleyin
         </p>
-      )}
+      )} */}
     </div>
   );
 };

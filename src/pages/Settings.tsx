@@ -1,269 +1,453 @@
 import { useState, useEffect } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { 
-  Store, 
-  Bell, 
-  Shield, 
-  Palette, 
-  CreditCard, 
-  HelpCircle,
+  User, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Calendar, 
+  Camera, 
   Save,
-  Upload,
-  Moon,
-  Sun,
-  Smartphone,
-  Mail,
-  MessageSquare,
+  LogOut,
+  Shield,
+  Bell,
+  Crown,
+  Coffee,
+  TrendingUp,
+  Star,
+  Instagram,
   Globe,
-  Clock,
-  Layout,
-  Check
+  Palette,
+  LayoutDashboard,
+  CreditCard,
+  HelpCircle,
+  Home
 } from "lucide-react";
+import { HalicKahveLogo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePremium } from "@/contexts/PremiumContext";
 import { useToast } from "@/hooks/use-toast";
 import { useDashboardCards, DASHBOARD_CARDS } from "@/contexts/DashboardCardsContext";
 
-type ThemeColor = "terracotta" | "sage" | "coffee" | "gold";
-
-interface ThemeConfig {
-  name: string;
-  value: ThemeColor;
-  primaryColor: string;
-  primaryHsl: string;
-  description: string;
-}
-
-const themeConfigs: ThemeConfig[] = [
-  { 
-    name: "Kiremit", 
-    value: "terracotta",
-    primaryColor: "#C24D2C",
-    primaryHsl: "18 40% 62%",
-    description: "Sıcak ve davetkar"
-  },
-  { 
-    name: "Adaçayı", 
-    value: "sage",
-    primaryColor: "#8A9A5B",
-    primaryHsl: "75 26% 48%",
-    description: "Doğal ve sakin"
-  },
-  { 
-    name: "Kahve", 
-    value: "coffee",
-    primaryColor: "#4B3621",
-    primaryHsl: "30 39% 21%",
-    description: "Klasik ve zarif"
-  },
-  { 
-    name: "Altın", 
-    value: "gold",
-    primaryColor: "#D4AF37",
-    primaryHsl: "42 55% 55%",
-    description: "Lüks ve parlak"
-  },
-];
-
 const Settings = () => {
-  const { toast } = useToast();
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [selectedTheme, setSelectedTheme] = useState<ThemeColor>("terracotta");
-  const { cardVisibility, toggleCard, resetToDefault } = useDashboardCards();
   const [searchParams, setSearchParams] = useSearchParams();
-  const tabFromUrl = searchParams.get("tab") || "store";
-  const [activeTab, setActiveTab] = useState(tabFromUrl);
+  const navigate = useNavigate();
+  const { isPremium } = usePremium();
+  const { toast } = useToast();
+  const { cardVisibility, toggleCard, resetToDefault } = useDashboardCards();
+  const [activeTab, setActiveTab] = useState("profile");
+  const [isEditing, setIsEditing] = useState(false);
+  const [showResetDialog, setShowResetDialog] = useState(false);
 
   useEffect(() => {
-    const tab = searchParams.get("tab") || "store";
-    setActiveTab(tab);
+    const tab = searchParams.get("tab");
+    if (tab) {
+      setActiveTab(tab);
+    }
   }, [searchParams]);
-
-  const handleSave = () => {
-    toast({
-      title: "Ayarlar kaydedildi",
-      description: "Değişiklikleriniz başarıyla kaydedildi.",
-    });
-  };
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     setSearchParams({ tab: value });
   };
 
-  const handleThemeChange = (theme: ThemeColor) => {
-    setSelectedTheme(theme);
-    const themeConfig = themeConfigs.find(t => t.value === theme);
-    if (themeConfig) {
-      // Update CSS custom property for primary color
-      document.documentElement.style.setProperty("--primary", themeConfig.primaryHsl);
-      
-      toast({
-        title: "Tema değiştirildi",
-        description: `${themeConfig.name} teması uygulandı.`,
-      });
-    }
+  const handleSave = () => {
+    setIsEditing(false);
+    toast({
+      title: "Profil güncellendi",
+      description: "Değişiklikleriniz başarıyla kaydedildi.",
+    });
   };
+
+  const handleReset = () => {
+    resetToDefault();
+    setShowResetDialog(false);
+    toast({
+      title: "Ayarlar sıfırlandı",
+      description: "Dashboard kartları varsayılan ayarlara döndürüldü.",
+    });
+  };
+
+  const stats = [
+    { label: "Toplam Müşteri", value: "1,234", icon: User, color: "text-sage" },
+    { label: "Bu Ay Ziyaret", value: "856", icon: Coffee, color: "text-gold" },
+    { label: "Büyüme", value: "+12%", icon: TrendingUp, color: "text-success" },
+    { label: "Puan", value: "4.8", icon: Star, color: "text-gold" },
+  ];
 
   return (
     <DashboardLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-foreground">Ayarlar</h1>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/")}
+            className="rounded-xl gap-2"
+          >
+            <Home className="w-4 h-4" />
+            Dashboard'a Dön
+          </Button>
+        </div>
+
+        {/* Tabs */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid grid-cols-3 lg:grid-cols-7 gap-2 bg-transparent h-auto p-0 mb-6">
-            {[
-              { value: "store", label: "Mağaza", icon: Store },
-              { value: "notifications", label: "Bildirimler", icon: Bell },
-              { value: "appearance", label: "Görünüm", icon: Palette },
-              { value: "dashboard", label: "Dashboard", icon: Layout },
-              { value: "security", label: "Güvenlik", icon: Shield },
-              { value: "billing", label: "Faturalandırma", icon: CreditCard },
-              { value: "help", label: "Yardım", icon: HelpCircle },
-            ].map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="flex items-center gap-2 px-4 py-3 rounded-xl border border-border/50 bg-card/60 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary"
-              >
-                <tab.icon className="w-4 h-4" />
-                <span className="hidden sm:inline text-sm">{tab.label}</span>
-              </TabsTrigger>
-            ))}
+          <TabsList className="grid w-full grid-cols-7 rounded-xl bg-muted/50 p-1">
+            <TabsTrigger value="profile" className="rounded-lg gap-2">
+              <User className="w-4 h-4" />
+              <span className="hidden sm:inline">Profil</span>
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="rounded-lg gap-2">
+              <Bell className="w-4 h-4" />
+              <span className="hidden sm:inline">Bildirimler</span>
+            </TabsTrigger>
+            <TabsTrigger value="appearance" className="rounded-lg gap-2">
+              <Palette className="w-4 h-4" />
+              <span className="hidden sm:inline">Görünüm</span>
+            </TabsTrigger>
+            <TabsTrigger value="dashboard" className="rounded-lg gap-2">
+              <LayoutDashboard className="w-4 h-4" />
+              <span className="hidden sm:inline">Dashboard</span>
+            </TabsTrigger>
+            <TabsTrigger value="security" className="rounded-lg gap-2">
+              <Shield className="w-4 h-4" />
+              <span className="hidden sm:inline">Güvenlik</span>
+            </TabsTrigger>
+            <TabsTrigger value="billing" className="rounded-lg gap-2">
+              <CreditCard className="w-4 h-4" />
+              <span className="hidden sm:inline">Faturalandırma</span>
+            </TabsTrigger>
+            <TabsTrigger value="help" className="rounded-lg gap-2">
+              <HelpCircle className="w-4 h-4" />
+              <span className="hidden sm:inline">Yardım</span>
+            </TabsTrigger>
           </TabsList>
 
-          {/* Store Settings */}
-          <TabsContent value="store" className="space-y-6">
+          {/* Profile Tab */}
+          <TabsContent value="profile" className="mt-6 space-y-6">
+            {/* Profile Header */}
             <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-6">Mağaza Bilgileri</h3>
-              
-              <div className="space-y-6">
-                <div className="flex items-center gap-6">
-                  <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center">
-                    <Store className="w-8 h-8 text-primary" />
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-2xl bg-black flex items-center justify-center shadow-lg p-4">
+                    <HalicKahveLogo className="w-full h-full" />
                   </div>
-                  <div>
-                    <Button variant="outline" size="sm" className="rounded-xl gap-2">
-                      <Upload className="w-4 h-4" />
-                      Logo Yükle
-                    </Button>
-                    <p className="text-xs text-muted-foreground mt-2">PNG, JPG - Max 2MB</p>
+                  <button className="absolute -bottom-2 -right-2 w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:bg-primary/90 transition-colors">
+                    <Camera className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-1">
+                    <h2 className="text-xl font-semibold text-foreground">Halic Kahve</h2>
+                    {/* {isPremium && (
+                      <span className="flex items-center gap-1 bg-gold/10 text-gold text-xs font-semibold px-2.5 py-1 rounded-full">
+                        <Crown className="w-3 h-3" />
+                        Premium
+                      </span>
+                    )} */}
                   </div>
+                  <a
+                    href="mailto:info@caferosetta.com"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors mb-3 inline-block"
+                  >
+                    info@caferosetta.com
+                  </a>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>Kadıköy, İstanbul</span>
+                    <span className="mx-2">•</span>
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>Mart 2023'ten beri üye</span>
+                  </div>
+                  <a
+                    href="https://www.instagram.com/halickahve/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Instagram className="w-3.5 h-3.5" />
+                    <span>@halickahve</span>
+                  </a>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Mağaza Adı</Label>
-                    <Input defaultValue="Halic Kahve" className="rounded-xl" />
+                <div className="flex gap-2">
+                  {isEditing ? (
+                    <>
+                      <Button variant="outline" size="sm" className="rounded-xl" onClick={() => setIsEditing(false)}>
+                        İptal
+                      </Button>
+                      <Button size="sm" className="rounded-xl gap-2 bg-primary" onClick={handleSave}>
+                        <Save className="w-4 h-4" />
+                        Kaydet
+                      </Button>
+                    </>
+                  ) : (
+                    <Button variant="outline" size="sm" className="rounded-xl" onClick={() => setIsEditing(true)}>
+                      Düzenle
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {stats.map((stat) => (
+                <div key={stat.label} className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-4">
+                  <div className="flex items-center gap-3">
+                    <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", 
+                      stat.color === "text-sage" && "bg-sage/10",
+                      stat.color === "text-gold" && "bg-gold/10",
+                      stat.color === "text-success" && "bg-success/10"
+                    )}>
+                      <stat.icon className={cn("w-5 h-5", stat.color)} />
+                    </div>
+                    <div>
+                      <p className="text-xl font-bold text-foreground">{stat.value}</p>
+                      <p className="text-xs text-muted-foreground">{stat.label}</p>
+                    </div>
                   </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Profile Details */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Personal Info */}
+              <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-6">İşletme Bilgileri</h3>
+                
+                <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label>Telefon</Label>
-                    <Input defaultValue="+90 216 123 4567" className="rounded-xl" />
+                    <Label>İşletme Adı</Label>
+                    <Input 
+                      defaultValue="Halic Kahve" 
+                      disabled={!isEditing}
+                      className="rounded-xl"
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>E-posta</Label>
-                    <Input defaultValue="info@caferosetta.com" className="rounded-xl" />
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input 
+                        defaultValue="info@caferosetta.com" 
+                        disabled={!isEditing}
+                        className="rounded-xl pl-10"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Telefon</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input 
+                        defaultValue="+90 216 123 4567" 
+                        disabled={!isEditing}
+                        className="rounded-xl pl-10"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Adres</Label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                      <Input 
+                        defaultValue="Caferağa Mah. Moda Cad. No:45, Kadıköy" 
+                        disabled={!isEditing}
+                        className="rounded-xl pl-10"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label>Web Sitesi</Label>
-                    <Input defaultValue="www.caferosetta.com" className="rounded-xl" />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Adres</Label>
-                  <Textarea 
-                    defaultValue="Caferağa Mah. Moda Cad. No:45, Kadıköy / İstanbul" 
-                    className="rounded-xl resize-none"
-                    rows={2}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Açılış Saati</Label>
-                    <Input type="time" defaultValue="08:00" className="rounded-xl" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Kapanış Saati</Label>
-                    <Input type="time" defaultValue="22:00" className="rounded-xl" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end">
-              <Button className="rounded-xl gap-2 bg-primary" onClick={handleSave}>
-                <Save className="w-4 h-4" />
-                Kaydet
-              </Button>
-            </div>
-          </TabsContent>
-
-          {/* Notifications */}
-          <TabsContent value="notifications" className="space-y-6">
-            <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-6">Bildirim Tercihleri</h3>
-              
-              <div className="space-y-4">
-                {[
-                  { icon: Mail, title: "E-posta Bildirimleri", desc: "Günlük özet ve önemli güncellemeler", defaultChecked: true },
-                  { icon: Smartphone, title: "Push Bildirimleri", desc: "Anlık müşteri aktiviteleri", defaultChecked: true },
-                  { icon: MessageSquare, title: "SMS Bildirimleri", desc: "Kritik uyarılar için SMS", defaultChecked: false },
-                  { icon: Bell, title: "Kayıp Müşteri Uyarıları", desc: "14+ gün gelmeyen müşteriler", defaultChecked: true },
-                  { icon: Globe, title: "Pazarlama E-postaları", desc: "Yenilikler ve ipuçları", defaultChecked: true },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-muted/20 hover:bg-muted/30 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                        <item.icon className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground">{item.title}</p>
-                        <p className="text-xs text-muted-foreground">{item.desc}</p>
-                      </div>
+                    <div className="relative">
+                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
+                      <a
+                        href="https://www.halickahve.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center h-10 px-3 pl-10 rounded-xl border border-border bg-background text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                      >
+                        halickahve.com
+                      </a>
                     </div>
-                    <Switch defaultChecked={item.defaultChecked} />
                   </div>
-                ))}
+                  <div className="space-y-2">
+                    <Label>Instagram</Label>
+                    <div className="relative">
+                      <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
+                      <a
+                        href="https://www.instagram.com/halickahve/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center h-10 px-3 pl-10 rounded-xl border border-border bg-background text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                      >
+                        @halickahve
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="space-y-6">
+                <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">Hızlı İşlemler</h3>
+                  
+                  <div className="space-y-3">
+                    <button 
+                      onClick={() => handleTabChange("security")}
+                      className="w-full flex items-center gap-3 p-3 rounded-xl bg-muted/20 hover:bg-muted/30 transition-colors text-left"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Shield className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground">Güvenlik Ayarları</p>
+                        <p className="text-xs text-muted-foreground">Şifre ve 2FA yönetimi</p>
+                      </div>
+                    </button>
+                    
+                    <button 
+                      onClick={() => handleTabChange("notifications")}
+                      className="w-full flex items-center gap-3 p-3 rounded-xl bg-muted/20 hover:bg-muted/30 transition-colors text-left"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center">
+                        <Bell className="w-5 h-5 text-gold" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground">Bildirim Tercihleri</p>
+                        <p className="text-xs text-muted-foreground">E-posta ve push ayarları</p>
+                      </div>
+                    </button>
+                    
+                    {/* <button 
+                      onClick={() => handleTabChange("billing")}
+                      className="w-full flex items-center gap-3 p-3 rounded-xl bg-muted/20 hover:bg-muted/30 transition-colors text-left"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-sage/10 flex items-center justify-center">
+                        <Crown className="w-5 h-5 text-sage" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground">Abonelik Yönetimi</p>
+                        <p className="text-xs text-muted-foreground">Plan ve faturalandırma</p>
+                      </div>
+                    </button> */}
+                  </div>
+                </div>
+
+                {/* Logout */}
+                <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
+                  <Button variant="outline" className="w-full rounded-xl gap-2 text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive">
+                    <LogOut className="w-4 h-4" />
+                    Çıkış Yap
+                  </Button>
+                </div>
               </div>
             </div>
           </TabsContent>
 
-          {/* Dashboard */}
-          <TabsContent value="dashboard" className="space-y-6">
+          {/* Notifications Tab */}
+          <TabsContent value="notifications" className="mt-6">
+            <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-6">Bildirim Ayarları</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-foreground">E-posta Bildirimleri</p>
+                    <p className="text-sm text-muted-foreground">Önemli güncellemeler için e-posta alın</p>
+                  </div>
+                  <Switch />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-foreground">Push Bildirimleri</p>
+                    <p className="text-sm text-muted-foreground">Tarayıcı bildirimleri alın</p>
+                  </div>
+                  <Switch />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-foreground">Kampanya Bildirimleri</p>
+                    <p className="text-sm text-muted-foreground">Yeni kampanyalar hakkında bilgilendirilme</p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Appearance Tab */}
+          <TabsContent value="appearance" className="mt-6">
+            <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-6">Görünüm Ayarları</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-foreground">Karanlık Mod</p>
+                    <p className="text-sm text-muted-foreground">Karanlık tema kullan</p>
+                  </div>
+                  <Switch />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-foreground">Kompakt Görünüm</p>
+                    <p className="text-sm text-muted-foreground">Daha az boşluk kullan</p>
+                  </div>
+                  <Switch />
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Dashboard Tab */}
+          <TabsContent value="dashboard" className="mt-6 space-y-4">
             <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-foreground">Dashboard Kartları</h3>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="rounded-xl gap-2"
-                  onClick={resetToDefault}
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">Dashboard Kartları</h3>
+                  <p className="text-sm text-muted-foreground">Gösterilecek kartları seçin</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowResetDialog(true)}
+                  className="rounded-xl"
                 >
-                  <Save className="w-4 h-4" />
                   Varsayılana Sıfırla
                 </Button>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-3">
                 {DASHBOARD_CARDS.map((card) => (
-                  <div 
-                    key={card.id} 
-                    className="flex items-center justify-between p-4 rounded-xl bg-muted/20 hover:bg-muted/30 transition-colors"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-foreground text-sm">{card.name}</p>
+                  <div key={card.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/20">
+                    <div>
+                      <p className="font-medium text-foreground">{card.name}</p>
                       {card.description && (
-                        <p className="text-xs text-muted-foreground mt-0.5">{card.description}</p>
+                        <p className="text-xs text-muted-foreground">{card.description}</p>
                       )}
                     </div>
-                    <Switch 
-                      checked={cardVisibility[card.id]} 
+                    <Switch
+                      checked={cardVisibility[card.id]}
                       onCheckedChange={() => toggleCard(card.id)}
                     />
                   </div>
@@ -272,175 +456,103 @@ const Settings = () => {
             </div>
           </TabsContent>
 
-          {/* Appearance */}
-          <TabsContent value="appearance" className="space-y-6">
+          {/* Security Tab */}
+          <TabsContent value="security" className="mt-6">
             <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-6">Görünüm Ayarları</h3>
-              
-              <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 rounded-xl bg-muted/20">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      {isDarkMode ? <Moon className="w-5 h-5 text-primary" /> : <Sun className="w-5 h-5 text-primary" />}
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">Karanlık Mod</p>
-                      <p className="text-xs text-muted-foreground">Göz yorgunluğunu azaltın</p>
-                    </div>
-                  </div>
-                  <Switch checked={isDarkMode} onCheckedChange={setIsDarkMode} />
+              <h3 className="text-lg font-semibold text-foreground mb-6">Güvenlik Ayarları</h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Mevcut Şifre</Label>
+                  <Input type="password" className="rounded-xl" />
                 </div>
-
-                <div>
-                  <Label className="mb-3 block text-foreground">Tema Rengi</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {themeConfigs.map((theme) => (
-                      <button
-                        key={theme.value}
-                        onClick={() => handleThemeChange(theme.value)}
-                        className={cn(
-                          "relative p-4 rounded-xl border-2 transition-all hover:scale-[1.02] group text-left",
-                          selectedTheme === theme.value
-                            ? "border-primary bg-primary/5 shadow-sm"
-                            : "border-border/50 bg-muted/20 hover:border-border hover:bg-muted/30"
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div 
-                            className={cn(
-                              "w-10 h-10 rounded-lg transition-all",
-                              selectedTheme === theme.value && "ring-2 ring-offset-1 ring-primary"
-                            )}
-                            style={{ backgroundColor: theme.primaryColor }}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm text-foreground">{theme.name}</p>
-                            <p className="text-xs text-muted-foreground mt-0.5">{theme.description}</p>
-                          </div>
-                          {selectedTheme === theme.value && (
-                            <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                              <Check className="w-3 h-3 text-primary-foreground" />
-                            </div>
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                <div className="space-y-2">
+                  <Label>Yeni Şifre</Label>
+                  <Input type="password" className="rounded-xl" />
                 </div>
+                <div className="space-y-2">
+                  <Label>Yeni Şifre (Tekrar)</Label>
+                  <Input type="password" className="rounded-xl" />
+                </div>
+                <Button className="rounded-xl">Şifreyi Güncelle</Button>
               </div>
             </div>
           </TabsContent>
 
-          {/* Security */}
-          <TabsContent value="security" className="space-y-6">
+          {/* Billing Tab */}
+          <TabsContent value="billing" className="mt-6">
             <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-6">Güvenlik Ayarları</h3>
-              
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <Label>Mevcut Şifre</Label>
-                  <Input type="password" placeholder="••••••••" className="rounded-xl" />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Yeni Şifre</Label>
-                    <Input type="password" placeholder="••••••••" className="rounded-xl" />
+              <h3 className="text-lg font-semibold text-foreground mb-6">Faturalandırma</h3>
+              <div className="space-y-4">
+                <div className="p-4 rounded-xl bg-muted/20">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-medium text-foreground">Mevcut Plan</p>
+                    {/* {isPremium ? (
+                      <span className="flex items-center gap-1 bg-gold/10 text-gold text-xs font-semibold px-2.5 py-1 rounded-full">
+                        <Crown className="w-3 h-3" />
+                        Premium
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Ücretsiz</span>
+                    )} */}
+                    <span className="text-xs text-muted-foreground">Ücretsiz</span>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Şifre Tekrar</Label>
-                    <Input type="password" placeholder="••••••••" className="rounded-xl" />
-                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {/* {isPremium ? "Premium özellikler aktif" : "Premium'a geçerek daha fazla özellik kullanın"} */}
+                    Plan yönetimi
+                  </p>
                 </div>
-
-                <div className="flex items-center justify-between p-4 rounded-xl bg-muted/20">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
-                      <Shield className="w-5 h-5 text-success" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">İki Faktörlü Doğrulama</p>
-                      <p className="text-xs text-muted-foreground">Ekstra güvenlik katmanı</p>
-                    </div>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
+                {/* {!isPremium && (
+                  <Button className="w-full rounded-xl gap-2">
+                    <Crown className="w-4 h-4" />
+                    Premium'a Geç
+                  </Button>
+                )} */}
               </div>
+            </div>
+          </TabsContent>
 
-              <div className="mt-6 flex justify-end">
-                <Button className="rounded-xl gap-2 bg-primary" onClick={handleSave}>
-                  <Save className="w-4 h-4" />
-                  Şifreyi Güncelle
+          {/* Help Tab */}
+          <TabsContent value="help" className="mt-6">
+            <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-6">Yardım ve Destek</h3>
+              <div className="space-y-4">
+                <div className="p-4 rounded-xl bg-muted/20">
+                  <p className="font-medium text-foreground mb-2">Sıkça Sorulan Sorular</p>
+                  <p className="text-sm text-muted-foreground">
+                    SSS sayfasını ziyaret ederek yaygın soruların cevaplarını bulabilirsiniz.
+                  </p>
+                </div>
+                <div className="p-4 rounded-xl bg-muted/20">
+                  <p className="font-medium text-foreground mb-2">Destek Ekibi</p>
+                  <p className="text-sm text-muted-foreground">
+                    Sorularınız için destek ekibimizle iletişime geçebilirsiniz.
+                  </p>
+                </div>
+                <Button variant="outline" className="w-full rounded-xl">
+                  Destek İletişim
                 </Button>
               </div>
             </div>
           </TabsContent>
-
-          {/* Billing */}
-          <TabsContent value="billing" className="space-y-6">
-            <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-6">Abonelik Bilgileri</h3>
-              
-              <div className="bg-gradient-to-br from-gold/10 to-gold/5 rounded-xl p-5 border border-gold/20 mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-sm font-semibold text-gold">Premium Plan</p>
-                    <p className="text-xs text-muted-foreground">Aylık faturalandırma</p>
-                  </div>
-                  <p className="text-2xl font-bold text-foreground">₺299<span className="text-sm font-normal text-muted-foreground">/ay</span></p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="rounded-lg">Planı Değiştir</Button>
-                  <Button variant="ghost" size="sm" className="rounded-lg text-destructive">İptal Et</Button>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h4 className="font-medium text-foreground">Ödeme Yöntemi</h4>
-                <div className="flex items-center justify-between p-4 rounded-xl bg-muted/20">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-8 rounded bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">VISA</span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">•••• •••• •••• 4242</p>
-                      <p className="text-xs text-muted-foreground">Son kullanma: 12/25</p>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" className="rounded-lg">Değiştir</Button>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Help */}
-          <TabsContent value="help" className="space-y-6">
-            <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-6">Yardım & Destek</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { title: "SSS", desc: "Sık sorulan sorular", icon: HelpCircle },
-                  { title: "Canlı Destek", desc: "7/24 destek hattı", icon: MessageSquare },
-                  { title: "Dokümantasyon", desc: "Kullanım kılavuzları", icon: Globe },
-                  { title: "Video Eğitimler", desc: "Adım adım videolar", icon: Clock },
-                ].map((item) => (
-                  <button
-                    key={item.title}
-                    className="flex items-center gap-4 p-4 rounded-xl bg-muted/20 hover:bg-muted/30 transition-colors text-left"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <item.icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">{item.title}</p>
-                      <p className="text-xs text-muted-foreground">{item.desc}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
         </Tabs>
+
+        {/* Reset Dialog */}
+        <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Emin misiniz?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Dashboard kartları varsayılan ayarlara döndürülecek. Bu işlem geri alınamaz.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="rounded-xl">İptal</AlertDialogCancel>
+              <AlertDialogAction onClick={handleReset} className="rounded-xl">
+                Sıfırla
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </DashboardLayout>
   );

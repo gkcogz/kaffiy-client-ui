@@ -9,7 +9,8 @@ import { SidebarProvider } from "@/contexts/SidebarContext";
 import Index from "./pages/Index";
 import Customers from "./pages/Customers";
 import Campaigns from "./pages/Campaigns";
-import Rewards from "./pages/Rewards";
+import Team from "./pages/Team";
+// import Rewards from "./pages/Rewards"; // Gelecekte kullanılmak üzere saklandı
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
@@ -29,7 +30,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/customers" element={<Customers />} />
             <Route path="/campaigns" element={<Campaigns />} />
-            <Route path="/rewards" element={<Rewards />} />
+            <Route path="/team" element={<Team />} />
+            {/* <Route path="/rewards" element={<Rewards />} /> */} {/* Gelecekte kullanılmak üzere saklandı */}
             <Route path="/settings" element={<Settings />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />

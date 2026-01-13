@@ -143,12 +143,12 @@ const Customers = () => {
   };
 
   const handleExport = () => {
-    // Create CSV content
+    // Create CSV content with masked customer data (same as displayed on dashboard)
     const headers = ["Ad Soyad", "E-posta", "Telefon", "Kaşe", "Toplam Ziyaret", "Son Ziyaret", "Ziyaret Sıklığı", "Durum", "Katılım Tarihi", "Favori Ürün"];
     const rows = customers.map(customer => [
-      customer.name,
-      customer.email,
-      customer.phone,
+      maskLastName(customer.name),
+      maskEmail(customer.email),
+      maskPhone(customer.phone),
       customer.stamps.toString(),
       customer.totalVisits.toString(),
       customer.lastVisit,
@@ -318,6 +318,7 @@ const Customers = () => {
               Dışa Aktar
             </Button>
             <Button 
+              type="button"
               size="sm" 
               className="rounded-xl gap-2 bg-primary"
               onClick={() => setIsAddModalOpen(true)}
@@ -533,6 +534,7 @@ const Customers = () => {
               İptal
             </Button>
             <Button
+              type="button"
               onClick={handleAddCustomer}
               className="rounded-xl bg-primary"
             >

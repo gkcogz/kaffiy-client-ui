@@ -19,13 +19,13 @@ export const LockedChurnAlert = () => {
         <p className="text-[10px] text-muted-foreground mb-3 text-center max-w-[200px]">
           Kayıp müşterilere otomatik kupon gönderin
         </p>
-        <Button 
+        {/* <Button 
           size="sm" 
           className="bg-gold hover:bg-gold/90 text-gold-foreground text-xs h-8 px-4"
         >
           <Crown className="w-3.5 h-3.5 mr-1.5" />
           Premium'a Geç
-        </Button>
+        </Button> */}
       </div>
 
       {/* Background content (blurred) */}

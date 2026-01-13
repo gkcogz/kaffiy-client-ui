@@ -133,7 +133,7 @@ export const NewCampaignModal = ({ open, onOpenChange, editingCampaign, onSave }
       name: campaignName,
       description: campaignMessage,
       type: campaignType,
-      status: editingCampaign?.status || ("scheduled" as const),
+      status: editingCampaign?.status || ("active" as const),
       startDate: format(startDate, "d MMM yyyy", { locale: tr }),
       endDate: format(endDate, "d MMM yyyy", { locale: tr }),
       targetAudience: targetAudienceLabel,

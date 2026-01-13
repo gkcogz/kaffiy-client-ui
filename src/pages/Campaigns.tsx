@@ -347,16 +347,30 @@ const Campaigns = () => {
               )}
 
               <div className="flex items-center justify-between pt-2 border-t border-border/30">
-                <span className={cn(
-                  "flex items-center gap-0.5 text-[9px] font-semibold px-1.5 py-0.5 rounded-full",
-                  campaign.status === "active" && "bg-success/10 text-success",
-                  campaign.status === "scheduled" && "bg-gold/10 text-gold",
-                  campaign.status === "ended" && "bg-muted/50 text-muted-foreground",
-                  campaign.status === "paused" && "bg-destructive/10 text-destructive"
-                )}>
-                  {getStatusIcon(campaign.status)}
-                  {campaign.status === "active" ? "Aktif" : campaign.status === "scheduled" ? "Planlanmış" : campaign.status === "ended" ? "Bitti" : "Duraklatıldı"}
-                </span>
+                {(campaign.status === "active" || campaign.status === "paused") ? (
+                  <Button
+                    onClick={() => handleToggleStatus(campaign)}
+                    className={cn(
+                      "flex items-center gap-0.5 text-[9px] font-semibold px-1.5 py-0.5 rounded-full h-auto",
+                      campaign.status === "active" && "bg-success/10 text-success hover:bg-success/20",
+                      campaign.status === "paused" && "bg-destructive/10 text-destructive hover:bg-destructive/20"
+                    )}
+                    variant="ghost"
+                    size="sm"
+                  >
+                    {getStatusIcon(campaign.status)}
+                    {campaign.status === "active" ? "Aktif" : "Duraklatıldı"}
+                  </Button>
+                ) : (
+                  <span className={cn(
+                    "flex items-center gap-0.5 text-[9px] font-semibold px-1.5 py-0.5 rounded-full",
+                    campaign.status === "scheduled" && "bg-gold/10 text-gold",
+                    campaign.status === "ended" && "bg-muted/50 text-muted-foreground"
+                  )}>
+                    {getStatusIcon(campaign.status)}
+                    {campaign.status === "scheduled" ? "Planlanmış" : "Bitti"}
+                  </span>
+                )}
                 <Button 
                   variant="outline" 
                   size="sm" 

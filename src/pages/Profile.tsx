@@ -64,12 +64,12 @@ const Profile = () => {
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-1">
                 <h2 className="text-xl font-semibold text-foreground">Halic Kahve</h2>
-                {isPremium && (
+                {/* {isPremium && (
                   <span className="flex items-center gap-1 bg-gold/10 text-gold text-xs font-semibold px-2.5 py-1 rounded-full">
                     <Crown className="w-3 h-3" />
                     Premium
                   </span>
-                )}
+                )} */}
               </div>
               <a
                 href="mailto:info@caferosetta.com"

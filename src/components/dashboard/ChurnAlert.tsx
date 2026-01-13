@@ -337,10 +337,13 @@ export const ChurnAlert = () => {
                       </div>
 
                       {/* Middle: Status */}
-                      <div className="flex items-center gap-1.5 mb-2.5 pl-1">
+                      <div className="flex items-center gap-1.5 mb-1.5 pl-1">
                         <div className="w-1.5 h-1.5 rounded-full bg-destructive" />
                         <p className="text-[10px] text-muted-foreground">{customer.daysAgo} gün önce</p>
                       </div>
+                      <p className="text-[9px] text-muted-foreground/70 mb-2.5 pl-1">
+                        Son ziyaret: {new Date(Date.now() - customer.daysAgo * 24 * 60 * 60 * 1000).toLocaleDateString("tr-TR", { day: "numeric", month: "short", year: "numeric" })}
+                      </p>
                       <p className="text-[9px] text-muted-foreground/70 mb-2.5 pl-1">
                         Normal rutininin {multiplier} katı süredir yok
                       </p>

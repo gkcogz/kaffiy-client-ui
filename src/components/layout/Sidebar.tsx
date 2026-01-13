@@ -1,15 +1,22 @@
-import { Home, Users, Megaphone, Gift, Settings, Coffee, ChevronRight, Sparkles, Crown, User, LogOut } from "lucide-react";
+import { Home, Users, Megaphone, Gift, Settings, Coffee, ChevronRight, Sparkles, Crown, User, LogOut, UserCog } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { usePremium } from "@/contexts/PremiumContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const menuItems = [
-  { id: "dashboard", label: "Dashboard", icon: Home, path: "/" },
-  { id: "customers", label: "Müşteriler", icon: Users, path: "/customers" },
-  { id: "campaigns", label: "Kampanyalar", icon: Megaphone, path: "/campaigns" },
-  { id: "rewards", label: "Ödüller", icon: Gift, path: "/rewards" },
-  { id: "settings", label: "Ayarlar", icon: Settings, path: "/settings" },
+  { id: "dashboard", label: "Dashboard", icon: Home, path: "/", disabled: false },
+  { id: "customers", label: "Müşteriler", icon: Users, path: "/customers", disabled: false },
+  { id: "campaigns", label: "Kampanyalar", icon: Megaphone, path: "/campaigns", disabled: false },
+  { id: "team", label: "Ekip", icon: UserCog, path: "/team", disabled: false },
+  { id: "rewards", label: "Ödüller", icon: Gift, path: "/rewards", disabled: true },
+  { id: "settings", label: "Ayarlar", icon: Settings, path: "/settings", disabled: false },
 ];
 
 export const Sidebar = () => {
@@ -31,38 +38,45 @@ export const Sidebar = () => {
           className="flex items-center cursor-pointer hover:opacity-80 transition-opacity w-full text-left"
         >
           <div className="w-full">
-            <h1 
-              className="brand-logo text-left"
-              style={{ 
-                fontFamily: "'Inter', 'Outfit', ui-sans-serif, system-ui, sans-serif",
-                textTransform: 'lowercase',
-                fontWeight: 700,
-                fontSize: '24px',
-                letterSpacing: '-0.03em',
-                color: '#1E293B',
-                marginBottom: 0
-              }}
-            >
-              kaff<span>i</span>y
-            </h1>
+            <div className="flex items-center gap-2 mb-1">
+              <h1 
+                className="brand-logo text-left"
+                style={{ 
+                  fontFamily: "'Inter', 'Outfit', ui-sans-serif, system-ui, sans-serif",
+                  textTransform: 'lowercase',
+                  fontWeight: 700,
+                  fontSize: '24px',
+                  letterSpacing: '-0.03em',
+                  color: '#1E293B',
+                  marginBottom: 0
+                }}
+              >
+                kaff<span>i</span>y
+              </h1>
+              {/* Minimalist color dots */}
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-success" />
+                <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+                <span className="w-1.5 h-1.5 rounded-full bg-destructive/80" />
+              </div>
+            </div>
             <p 
               className="text-left lowercase"
               style={{ 
                 fontFamily: "'Inter', 'Outfit', ui-sans-serif, system-ui, sans-serif",
                 fontWeight: 400,
-                fontSize: '13px',
-                color: '#64748B',
-                marginTop: '4px'
+                fontSize: '11px',
+                color: '#64748B'
               }}
             >
-              Müşteri Büyüme Platformu
+              Akıllı Sadakat Sistemi
             </p>
           </div>
         </button>
       </div>
 
       {/* Premium Toggle - Compact */}
-      <div className="px-3 pt-4">
+      {/* <div className="px-3 pt-4">
         <button
           onClick={togglePremium}
           className={cn(
@@ -94,7 +108,7 @@ export const Sidebar = () => {
             )} />
           </div>
         </button>
-      </div>
+      </div> */}
 
       {/* Navigation */}
       <nav className="flex-1 px-3 pt-5 overflow-y-auto">
@@ -103,30 +117,54 @@ export const Sidebar = () => {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
+            const isDisabled = item.disabled;
             
+            const menuButton = (
+              <button
+                onClick={() => !isDisabled && navigate(item.path)}
+                disabled={isDisabled}
+                className={cn(
+                  "group flex items-center gap-2.5 px-2.5 py-2 rounded-lg w-full transition-all duration-150 text-[13px]",
+                  isDisabled && "cursor-not-allowed opacity-50",
+                  !isDisabled && active 
+                    ? "bg-primary text-primary-foreground shadow-sm" 
+                    : !isDisabled && "text-sidebar-foreground/60 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+                  isDisabled && "text-sidebar-foreground/30"
+                )}
+              >
+                <Icon className={cn(
+                  "w-4 h-4 flex-shrink-0",
+                  isDisabled && "text-sidebar-muted/30",
+                  !isDisabled && active ? "text-primary-foreground" : !isDisabled && "text-sidebar-muted group-hover:text-sidebar-foreground"
+                )} />
+                <span className="flex-1 text-left font-medium">{item.label}</span>
+                {item.hasSubmenu && (
+                  <ChevronRight className={cn(
+                    "w-3.5 h-3.5 opacity-50",
+                    active && "rotate-90"
+                  )} />
+                )}
+              </button>
+            );
+
+            if (isDisabled) {
+              return (
+                <TooltipProvider key={item.id}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <li>{menuButton}</li>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="bg-popover text-popover-foreground border-border">
+                      <p className="text-xs font-medium">Pek yakında</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              );
+            }
+
             return (
               <li key={item.id}>
-                <button
-                  onClick={() => navigate(item.path)}
-                  className={cn(
-                    "group flex items-center gap-2.5 px-2.5 py-2 rounded-lg w-full transition-all duration-150 text-[13px]",
-                    active 
-                      ? "bg-primary text-primary-foreground shadow-sm" 
-                      : "text-sidebar-foreground/60 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
-                  )}
-                >
-                  <Icon className={cn(
-                    "w-4 h-4 flex-shrink-0",
-                    active ? "text-primary-foreground" : "text-sidebar-muted group-hover:text-sidebar-foreground"
-                  )} />
-                  <span className="flex-1 text-left font-medium">{item.label}</span>
-                  {item.hasSubmenu && (
-                    <ChevronRight className={cn(
-                      "w-3.5 h-3.5 opacity-50",
-                      active && "rotate-90"
-                    )} />
-                  )}
-                </button>
+                {menuButton}
               </li>
             );
           })}
@@ -134,7 +172,7 @@ export const Sidebar = () => {
       </nav>
 
       {/* Premium Badge */}
-      {isPremium && (
+      {/* {isPremium && (
         <div className="px-3 pb-3">
           <div className="rounded-lg px-3 py-2 bg-gradient-to-r from-gold/10 to-transparent border-l-2 border-gold/40">
             <div className="flex items-center gap-1.5">
@@ -143,7 +181,7 @@ export const Sidebar = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Footer - Powered by kaffiy */}
       <div className="px-3 pb-3 pt-2 border-t border-sidebar-border/30">
@@ -158,9 +196,9 @@ export const Sidebar = () => {
                 fontFamily: "'DM Sans', 'Inter', ui-sans-serif, system-ui, sans-serif"
               }}
             >
-              Powered by <span className="font-medium text-sidebar-muted">kaffiy</span>
+              Powered by <span className="font-medium text-sidebar-muted">Akıllı Sadakat Sistemi</span>
               <br />
-              <span className="text-[8px]">Müşteri Büyüme Platformu</span>
+              <span className="text-[8px]">Akıllı Sadakat Sistemi</span>
             </p>
           </button>
         </div>

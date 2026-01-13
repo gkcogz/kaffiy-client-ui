@@ -72,7 +72,7 @@ export const BaristaView = () => {
                 letterSpacing: '-0.02em'
               }}
             >
-              kaffiy
+              Akıllı Sadakat Sistemi
             </h1>
             <p 
               className="font-light lowercase text-[10px] mt-0.5"
@@ -81,7 +81,7 @@ export const BaristaView = () => {
                 color: '#64748B'
               }}
             >
-              Müşteri Büyüme Platformu
+              Akıllı Sadakat Sistemi
             </p>
           </div>
           <p className="text-sm text-muted-foreground font-medium">Halic Kahve</p>
