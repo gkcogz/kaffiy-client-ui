@@ -1,6 +1,6 @@
 import { ReactNode, useState, useEffect } from "react";
 import { Sidebar } from "./Sidebar";
-import { Calendar as CalendarIcon, Bell, Search, Menu, PanelLeftClose, PanelLeft, CheckCircle2, AlertCircle, Megaphone, Percent, Gift, ChevronDown, ChevronUp } from "lucide-react";
+import { Calendar as CalendarIcon, Bell, Search, Menu, PanelLeftClose, PanelLeft, CheckCircle2, AlertCircle, Megaphone, Percent, Gift, ChevronDown, ChevronUp, ChevronRight, ChevronLeft, Palette, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -140,9 +140,13 @@ export const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
               variant="ghost" 
               size="icon" 
               onClick={toggleMobileSidebar}
-              className="lg:hidden text-muted-foreground/60 hover:text-muted-foreground hover:bg-transparent rounded-lg w-7 h-7 p-0"
+              className="lg:hidden text-muted-foreground/60 hover:text-muted-foreground hover:bg-transparent rounded-lg w-6 h-6 p-0"
             >
-              <Menu className="w-3.5 h-3.5" />
+              {isMobileSidebarOpen ? (
+                <ChevronLeft className="w-4 h-4" />
+              ) : (
+                <ChevronRight className="w-4 h-4" />
+              )}
             </Button>
             
             {/* Sidebar Toggle - Desktop */}
@@ -150,12 +154,12 @@ export const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
               variant="ghost" 
               size="icon" 
               onClick={toggleDesktopSidebar}
-              className="hidden lg:flex text-muted-foreground/60 hover:text-muted-foreground hover:bg-transparent rounded-lg w-7 h-7 p-0"
+              className="hidden lg:flex text-muted-foreground/60 hover:text-muted-foreground hover:bg-transparent rounded-lg w-6 h-6 p-0"
             >
               {isDesktopSidebarCollapsed ? (
-                <PanelLeft className="w-3.5 h-3.5" />
+                <ChevronRight className="w-4 h-4" />
               ) : (
-                <PanelLeftClose className="w-3.5 h-3.5" />
+                <ChevronLeft className="w-4 h-4" />
               )}
             </Button>
           </div>
@@ -282,6 +286,24 @@ export const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
                 )}
               </PopoverContent>
             </Popover>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/settings?tab=appearance")}
+              className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl w-9 h-9 lg:w-10 lg:h-10"
+              aria-label="Görünüm Ayarları"
+            >
+              <Palette className="w-4 h-4 lg:w-5 lg:h-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/settings")}
+              className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl w-9 h-9 lg:w-10 lg:h-10"
+              aria-label="Ayarlar"
+            >
+              <Settings className="w-4 h-4 lg:w-5 lg:h-5" />
+            </Button>
             <button
               onClick={() => navigate("/profile")}
               className="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-muted/50 transition-colors group"

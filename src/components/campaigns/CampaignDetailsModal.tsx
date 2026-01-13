@@ -14,6 +14,7 @@ interface Campaign {
   conversions: number;
   conversionRate: number;
   description: string;
+  personLimit?: number;
 }
 
 interface CampaignDetailsModalProps {
@@ -102,6 +103,28 @@ export const CampaignDetailsModal = ({ open, onOpenChange, campaign }: CampaignD
             </p>
             <p className="text-sm text-foreground">{campaign.targetAudience}</p>
           </div>
+
+          {/* Person Limit */}
+          {campaign.personLimit && (
+            <div className="space-y-2 pt-2 border-t border-border/30">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                <Users className="w-3.5 h-3.5" />
+                Kişi Limiti
+              </p>
+              <div className="flex items-baseline gap-2">
+                <p className={cn(
+                  "text-2xl font-bold",
+                  campaign.conversions >= campaign.personLimit ? "text-destructive" : "text-foreground"
+                )}>
+                  {campaign.conversions}
+                </p>
+                <p className="text-sm text-muted-foreground">/ {campaign.personLimit}</p>
+              </div>
+              {campaign.conversions >= campaign.personLimit && (
+                <p className="text-xs text-destructive">Limit doldu - Kampanya duraklatıldı</p>
+              )}
+            </div>
+          )}
 
           {/* Stats */}
           {campaign.status !== "scheduled" && (

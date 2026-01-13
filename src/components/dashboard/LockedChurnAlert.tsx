@@ -1,9 +1,11 @@
 import { Lock, Crown, AlertTriangle, User, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePremium } from "@/contexts/PremiumContext";
+import { useNavigate } from "react-router-dom";
 
 export const LockedChurnAlert = () => {
   const { isPremium } = usePremium();
+  const navigate = useNavigate();
 
   // If premium, show nothing (the real ChurnAlert will be shown instead)
   if (isPremium) return null;
@@ -19,13 +21,14 @@ export const LockedChurnAlert = () => {
         <p className="text-[10px] text-muted-foreground mb-3 text-center max-w-[200px]">
           Kayıp müşterilere otomatik kupon gönderin
         </p>
-        {/* <Button 
+        <Button 
           size="sm" 
           className="bg-gold hover:bg-gold/90 text-gold-foreground text-xs h-8 px-4"
+          onClick={() => navigate("/settings?tab=billing")}
         >
           <Crown className="w-3.5 h-3.5 mr-1.5" />
           Premium'a Geç
-        </Button> */}
+        </Button>
       </div>
 
       {/* Background content (blurred) */}

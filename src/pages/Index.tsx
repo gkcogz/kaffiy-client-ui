@@ -13,7 +13,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { usePremium } from "@/contexts/PremiumContext";
 import { useDashboardCards } from "@/contexts/DashboardCardsContext";
 import { useSidebar } from "@/contexts/SidebarContext";
-import { Settings } from "lucide-react";
+import { LayoutDashboard, Grid3x3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -37,7 +37,7 @@ const Index = () => {
   // Desktop & Tablet: Show Full Dashboard
   return (
     <DashboardLayout>
-      {/* Settings Shortcut - Fixed top right */}
+      {/* Dashboard Panels Shortcut - Fixed top right */}
       <Button
         variant="ghost"
         size="icon"
@@ -49,9 +49,9 @@ const Index = () => {
           "shadow-sm transition-all duration-200",
           "lg:top-24 lg:right-6"
         )}
-        aria-label="Dashboard Ayarları"
+        aria-label="Dashboard Panelleri"
       >
-        <Settings className="w-4 h-4" />
+        <LayoutDashboard className="w-4 h-4" />
       </Button>
 
       <div className="space-y-4 lg:space-y-5">

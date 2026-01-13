@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { TrendingUp, Maximize2, X, GripVertical } from "lucide-react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Area, XAxis, Bar, ComposedChart, ReferenceLine, Tooltip as RechartsTooltip } from "recharts";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { PieChart, Pie, Cell, ResponsiveContainer, Area, XAxis, YAxis, Bar, ComposedChart, ReferenceLine, Tooltip as RechartsTooltip } from "recharts";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -84,6 +86,8 @@ export const VisitsChart = () => {
   const [selectedPointIndex, setSelectedPointIndex] = useState<number | null>(null);
   const [isDraggingPoint, setIsDraggingPoint] = useState(false);
   const [pointTooltip, setPointTooltip] = useState<{ x: number; y: number; time: string; visits: number } | null>(null);
+  const [hoverPosition, setHoverPosition] = useState<{ x: number; y: number; value: number; time: string } | null>(null);
+  const [showCumulative, setShowCumulative] = useState(false); // Toggle for cumulative view
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const expandedChartContainerRef = useRef<HTMLDivElement>(null);
   
@@ -95,6 +99,22 @@ export const VisitsChart = () => {
     { name: "Mevcut", value: data.returning },
     { name: "Yeni", value: data.new },
   ];
+
+  // Calculate cumulative and hourly data for distribution chart
+  const cumulativeChartData = data.chartData.map((item, index) => {
+    const cumulative = data.chartData.slice(0, index + 1).reduce((sum, d) => sum + d.visits, 0);
+    return {
+      ...item,
+      cumulative,
+      hourly: item.visits, // Keep original hourly visits
+      index,
+    };
+  });
+
+  // Chart data based on toggle
+  const chartDataToDisplay = showCumulative 
+    ? cumulativeChartData.map(d => ({ ...d, value: d.cumulative }))
+    : cumulativeChartData.map(d => ({ ...d, value: d.hourly }));
 
   // Calculate centered position
   const calculateCenterPosition = () => {
@@ -144,11 +164,37 @@ export const VisitsChart = () => {
     }
   }, [expandedChart]);
 
-  // Initialize selected point when period changes
+  // Initialize selected point when period changes or chart expands
   useEffect(() => {
-    const peakIndex = data.chartData.findIndex(d => d.isPeak);
-    setSelectedPointIndex(peakIndex >= 0 ? peakIndex : 0);
-  }, [period, data.chartData]);
+    if (expandedChart === "distribution") {
+      const peakIndex = chartDataToDisplay.findIndex(d => d.isPeak);
+      setSelectedPointIndex(peakIndex >= 0 ? peakIndex : 0);
+      setHoverPosition(null);
+    }
+  }, [period, expandedChart, showCumulative]);
+
+  // Keyboard navigation for selected point
+  useEffect(() => {
+    if (expandedChart !== "distribution" || selectedPointIndex === null) return;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        let newIndex = selectedPointIndex;
+        if (e.key === "ArrowLeft") {
+          newIndex = Math.max(0, selectedPointIndex - 1);
+        } else {
+          newIndex = Math.min(chartDataToDisplay.length - 1, selectedPointIndex + 1);
+        }
+        if (newIndex !== selectedPointIndex) {
+          setSelectedPointIndex(newIndex);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [expandedChart, selectedPointIndex, chartDataToDisplay.length]);
 
   // Center modal on resize (optional)
   useEffect(() => {
@@ -727,24 +773,105 @@ export const VisitsChart = () => {
                     <div className="p-4 rounded-xl bg-muted/30 border border-border">
                       <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">En Yoğun Zaman</p>
                       <p className="text-lg font-bold text-foreground">
-                        {data.chartData.find(d => d.isPeak)?.time || "N/A"}
+                        {hoverPosition 
+                          ? hoverPosition.time
+                          : selectedPointIndex !== null && chartDataToDisplay[selectedPointIndex]
+                          ? chartDataToDisplay[selectedPointIndex].time
+                          : chartDataToDisplay.find(d => d.isPeak)?.time || "N/A"}
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {data.chartData.find(d => d.isPeak)?.visits || 0} ziyaret
+                        {hoverPosition 
+                          ? hoverPosition.value
+                          : selectedPointIndex !== null && chartDataToDisplay[selectedPointIndex]
+                          ? chartDataToDisplay[selectedPointIndex].value
+                          : chartDataToDisplay.find(d => d.isPeak)?.value || 0} ziyaret {showCumulative ? "(kümülatif)" : "(saatlik)"}
                       </p>
                     </div>
                   </div>
 
-                  {/* Chart */}
-                  <div className="h-64">
+                  {/* Toggle for Cumulative/Hourly View */}
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-muted/20 border border-border/30">
+                    <Label htmlFor="cumulative-toggle" className="text-sm font-medium text-foreground cursor-pointer">
+                      Kümülatif Görünüm
+                    </Label>
+                    <Switch
+                      id="cumulative-toggle"
+                      checked={showCumulative}
+                      onCheckedChange={setShowCumulative}
+                    />
+                  </div>
+
+                  {/* Interactive Chart with Continuous Cursor */}
+                  <div className="h-80 relative mb-16" 
+                    onMouseMove={(e: React.MouseEvent<HTMLDivElement>) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = e.clientX - rect.left;
+                      const y = e.clientY - rect.top;
+                      
+                      // Calculate which data point we're closest to based on X position
+                      const chartWidth = rect.width - 60; // Account for margins
+                      const dataPointWidth = chartWidth / (chartDataToDisplay.length - 1);
+                      const relativeX = Math.max(0, Math.min(chartWidth, x - 30)); // Account for left margin
+                      const pointRatio = relativeX / chartWidth;
+                      const pointIndex = Math.round(pointRatio * (chartDataToDisplay.length - 1));
+                      const clampedIndex = Math.max(0, Math.min(chartDataToDisplay.length - 1, pointIndex));
+                      
+                      // Interpolate between points for smooth cursor movement
+                      const exactIndex = pointRatio * (chartDataToDisplay.length - 1);
+                      const lowerIndex = Math.floor(exactIndex);
+                      const upperIndex = Math.min(chartDataToDisplay.length - 1, Math.ceil(exactIndex));
+                      const t = exactIndex - lowerIndex;
+                      
+                      let interpolatedValue = chartDataToDisplay[clampedIndex].value;
+                      let interpolatedTime = chartDataToDisplay[clampedIndex].time;
+                      
+                      if (lowerIndex !== upperIndex && t > 0) {
+                        const lowerValue = chartDataToDisplay[lowerIndex].value;
+                        const upperValue = chartDataToDisplay[upperIndex].value;
+                        interpolatedValue = lowerValue + (upperValue - lowerValue) * t;
+                        
+                        // For time, use the closest point
+                        interpolatedTime = chartDataToDisplay[clampedIndex].time;
+                      }
+                      
+                      // Calculate Y position based on value
+                      const maxValue = Math.max(...chartDataToDisplay.map(d => d.value));
+                      const minValue = 0;
+                      const chartHeight = rect.height - 80; // Account for margins
+                      const normalizedValue = (interpolatedValue - minValue) / (maxValue - minValue);
+                      const calculatedY = rect.height - 40 - (normalizedValue * chartHeight); // Bottom margin = 40
+                      
+                      setHoverPosition({
+                        x: Math.max(30, Math.min(rect.width - 30, x)),
+                        y: calculatedY,
+                        value: Math.round(interpolatedValue),
+                        time: interpolatedTime,
+                      });
+                      
+                      setSelectedPointIndex(clampedIndex);
+                    }}
+                    onMouseLeave={() => {
+                      // Clear hover position but keep selected index
+                      setHoverPosition(null);
+                      const peakIndex = chartDataToDisplay.findIndex(d => d.isPeak);
+                      setSelectedPointIndex(peakIndex >= 0 ? peakIndex : 0);
+                    }}
+                  >
                     <ResponsiveContainer width="100%" height="100%">
-                      <ComposedChart data={data.chartData} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                      <ComposedChart 
+                        data={chartDataToDisplay} 
+                        margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+                      >
                         <defs>
                           <linearGradient id="expandedVisitGradient" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="hsl(72, 22%, 38%)" stopOpacity={0.4} />
                             <stop offset="100%" stopColor="hsl(72, 22%, 38%)" stopOpacity={0.05} />
                           </linearGradient>
                         </defs>
+                        <RechartsTooltip
+                          content={() => null}
+                          cursor={false}
+                        />
                         <XAxis 
                           dataKey="time" 
                           axisLine={false}
@@ -753,21 +880,36 @@ export const VisitsChart = () => {
                           interval={0}
                           dy={5}
                         />
+                        <YAxis 
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 11, fill: 'hsl(25, 12%, 55%)' }}
+                          domain={[0, 'dataMax']}
+                        />
                         <Area 
                           type="monotone"
-                          dataKey="visits"
+                          dataKey="value"
                           stroke="hsl(72, 22%, 38%)"
                           strokeWidth={2}
                           fill="url(#expandedVisitGradient)"
-                          dot={(props) => {
-                            const { cx, cy, payload } = props;
-                            if (payload.isPeak) {
+                          dot={(props: any) => {
+                            const { cx, cy } = props;
+                            if (cx && cy) {
                               return (
-                                <circle cx={cx} cy={cy} r={6} fill="hsl(35, 30%, 55%)" stroke="white" strokeWidth={2} />
+                                <circle 
+                                  key={`dot-${props.index}`}
+                                  cx={cx} 
+                                  cy={cy} 
+                                  r={4}
+                                  fill="hsl(72, 22%, 38%)"
+                                  stroke="white" 
+                                  strokeWidth={1.5}
+                                />
                               );
                             }
                             return null;
                           }}
+                          activeDot={false}
                         />
                         <Bar 
                           dataKey="current"
@@ -777,36 +919,84 @@ export const VisitsChart = () => {
                         />
                       </ComposedChart>
                     </ResponsiveContainer>
-                  </div>
+                    
+                    {/* Continuous Cursor Line and Dot */}
+                    {hoverPosition && (
+                      <>
+                        {/* Vertical Line */}
+                        <div 
+                          className="absolute pointer-events-none z-20"
+                          style={{
+                            left: `${hoverPosition.x}px`,
+                            top: '20px',
+                            bottom: '40px',
+                            width: '2px',
+                            background: 'hsl(72, 22%, 38%)',
+                            opacity: 0.5,
+                          }}
+                        />
+                        {/* Cursor Dot */}
+                        <div 
+                          className="absolute pointer-events-none z-30"
+                          style={{
+                            left: `${hoverPosition.x - 8}px`,
+                            top: `${hoverPosition.y - 8}px`,
+                            width: '16px',
+                            height: '16px',
+                            borderRadius: '50%',
+                            background: 'hsl(35, 30%, 55%)',
+                            border: '3px solid white',
+                            boxShadow: '0 0 0 4px rgba(194, 65, 12, 0.2)',
+                          }}
+                        />
+                        {/* Glow Effect */}
+                        <div 
+                          className="absolute pointer-events-none z-20"
+                          style={{
+                            left: `${hoverPosition.x - 12}px`,
+                            top: `${hoverPosition.y - 12}px`,
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '50%',
+                            background: 'hsl(35, 30%, 55%)',
+                            opacity: 0.3,
+                            filter: 'blur(8px)',
+                          }}
+                        />
+                      </>
+                    )}
 
-                  {/* Time Breakdown */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {data.chartData.map((item, index) => (
-                      <div
-                        key={index}
-                        className={cn(
-                          "p-3 rounded-lg border",
-                          item.isPeak 
-                            ? "bg-primary/10 border-primary/30" 
-                            : "bg-muted/20 border-border/30"
-                        )}
-                      >
-                        <p className="text-xs text-muted-foreground mb-1">{item.time}</p>
-                        <p className="text-lg font-bold text-foreground">{item.visits}</p>
-                        {item.isPeak && (
-                          <p className="text-[10px] text-primary font-medium mt-1">En yoğun</p>
-                        )}
+                    {/* Compact Data Display Box - Outside chart area */}
+                    {(hoverPosition || (selectedPointIndex !== null && chartDataToDisplay[selectedPointIndex])) && (
+                      <div className="absolute -bottom-16 left-0 right-0 flex justify-center z-40">
+                        <div className="bg-card border border-border rounded-lg shadow-lg px-4 py-2.5 flex items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Zaman:</span>
+                            <span className="text-sm font-bold text-foreground">
+                              {hoverPosition?.time || chartDataToDisplay[selectedPointIndex || 0]?.time}
+                            </span>
+                          </div>
+                          <div className="w-px h-4 bg-border" />
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                              {showCumulative ? "Kümülatif:" : "Saatlik:"}
+                            </span>
+                            <span className="text-sm font-bold text-foreground">
+                              {hoverPosition?.value || chartDataToDisplay[selectedPointIndex || 0]?.value}
+                            </span>
+                          </div>
+                          {((hoverPosition && selectedPointIndex !== null && chartDataToDisplay[selectedPointIndex]?.isPeak) || 
+                            (!hoverPosition && selectedPointIndex !== null && chartDataToDisplay[selectedPointIndex]?.isPeak)) && (
+                            <>
+                              <div className="w-px h-4 bg-border" />
+                              <span className="text-[10px] text-primary font-medium flex items-center gap-1">
+                                <span>⭐</span> En Yoğun
+                              </span>
+                            </>
+                          )}
+                        </div>
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Additional Info */}
-                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
-                    <p className="text-xs font-medium text-primary mb-2">İçgörü</p>
-                    <p className="text-sm text-muted-foreground">
-                      {data.chartData.find(d => d.isPeak)?.time} saatleri arasında en yoğun trafik yaşanıyor. 
-                      Bu zaman diliminde ekstra personel veya kampanya planlaması yapabilirsiniz.
-                    </p>
+                    )}
                   </div>
                 </div>
               )}

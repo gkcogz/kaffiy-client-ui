@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { 
@@ -50,6 +50,7 @@ interface Campaign {
   conversions: number;
   conversionRate: number;
   description: string;
+  personLimit?: number;
 }
 
 const mockCampaigns: Campaign[] = [
@@ -64,7 +65,8 @@ const mockCampaigns: Campaign[] = [
     reach: 234,
     conversions: 89,
     conversionRate: 38,
-    description: "Tüm soğuk içeceklerde %20 indirim"
+    description: "Tüm soğuk içeceklerde %20 indirim",
+    personLimit: 150
   },
   { 
     id: "2", 
@@ -77,7 +79,8 @@ const mockCampaigns: Campaign[] = [
     reach: 156,
     conversions: 78,
     conversionRate: 50,
-    description: "Çift kaşe kampanyası"
+    description: "Çift kaşe kampanyası",
+    personLimit: 100
   },
   { 
     id: "3", 
@@ -120,6 +123,27 @@ const Campaigns = () => {
   const filteredCampaigns = campaigns.filter(
     c => filterStatus === "all" || c.status === filterStatus
   );
+
+  // Check if campaigns reached their person limit and deactivate them
+  useEffect(() => {
+    setCampaigns(prev => {
+      const updated = prev.map(campaign => {
+        // Only check active campaigns with a person limit
+        if (campaign.status === "active" && campaign.personLimit && campaign.conversions >= campaign.personLimit) {
+          toast({
+            title: "Kampanya limiti doldu",
+            description: `${campaign.name} kampanyası kişi limitine ulaştığı için otomatik olarak duraklatıldı.`,
+          });
+          return { ...campaign, status: "paused" as const };
+        }
+        return campaign;
+      });
+      // Only update if something changed
+      const hasChanges = updated.some((c, i) => c.status !== prev[i]?.status);
+      return hasChanges ? updated : prev;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [campaigns.map(c => `${c.id}-${c.conversions}-${c.personLimit}`).join(",")]);
 
   const stats = {
     active: campaigns.filter(c => c.status === "active").length,
@@ -334,6 +358,17 @@ const Campaigns = () => {
 
               {campaign.status !== "scheduled" && (
                 <div className="space-y-1.5 mb-2.5">
+                  {campaign.personLimit && (
+                    <div className="flex items-center justify-between text-[10px] mb-1">
+                      <span className="text-muted-foreground">Kişi Limiti</span>
+                      <span className={cn(
+                        "font-semibold",
+                        campaign.conversions >= campaign.personLimit ? "text-destructive" : "text-foreground"
+                      )}>
+                        {campaign.conversions} / {campaign.personLimit}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between text-[10px]">
                     <span className="text-muted-foreground">Dönüşüm</span>
                     <span className="font-semibold text-foreground">{campaign.conversionRate}%</span>
@@ -395,9 +430,14 @@ const Campaigns = () => {
         onSave={(campaignData) => {
           if (editingCampaign) {
             // Update existing campaign
+            const updatedCampaign = { ...editingCampaign, ...campaignData };
+            // Check if limit is reached
+            if (updatedCampaign.personLimit && updatedCampaign.conversions >= updatedCampaign.personLimit && updatedCampaign.status === "active") {
+              updatedCampaign.status = "paused";
+            }
             setCampaigns(prev => prev.map(c => 
               c.id === editingCampaign.id 
-                ? { ...c, ...campaignData }
+                ? updatedCampaign as Campaign
                 : c
             ));
             toast({
@@ -407,7 +447,12 @@ const Campaigns = () => {
             setEditingCampaign(null);
           } else {
             // Create new campaign
-            setCampaigns(prev => [...prev, campaignData as Campaign]);
+            const newCampaign = campaignData as Campaign;
+            // Check if limit is reached
+            if (newCampaign.personLimit && newCampaign.conversions >= newCampaign.personLimit && newCampaign.status === "active") {
+              newCampaign.status = "paused";
+            }
+            setCampaigns(prev => [...prev, newCampaign]);
             toast({
               title: "Kampanya oluşturuldu",
               description: `${campaignData.name} başarıyla oluşturuldu.`,

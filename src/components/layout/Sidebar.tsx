@@ -1,8 +1,10 @@
+import { useState, useEffect } from "react";
 import { Home, Users, Megaphone, Gift, Settings, Coffee, ChevronRight, Sparkles, Crown, User, LogOut, UserCog } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { usePremium } from "@/contexts/PremiumContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTheme } from "@/hooks/use-theme";
 import {
   Tooltip,
   TooltipContent,
@@ -23,6 +25,30 @@ export const Sidebar = () => {
   const { isPremium, togglePremium } = usePremium();
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  
+  // Force re-render when theme changes by observing document class
+  const [isDarkMode, setIsDarkMode] = useState(isDark);
+  
+  useEffect(() => {
+    setIsDarkMode(isDark);
+    // Also check document class for immediate updates
+    const checkDarkMode = () => {
+      setIsDarkMode(document.documentElement.classList.contains("dark"));
+    };
+    
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    
+    // Initial check
+    checkDarkMode();
+    
+    return () => observer.disconnect();
+  }, [isDark]);
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
@@ -40,14 +66,16 @@ export const Sidebar = () => {
           <div className="w-full">
             <div className="flex items-center gap-2 mb-1">
               <h1 
-                className="brand-logo text-left"
+                className={cn(
+                  "brand-logo text-left transition-colors",
+                  isDarkMode ? "text-white" : "text-[#1E293B]"
+                )}
                 style={{ 
                   fontFamily: "'Inter', 'Outfit', ui-sans-serif, system-ui, sans-serif",
                   textTransform: 'lowercase',
                   fontWeight: 700,
                   fontSize: '24px',
                   letterSpacing: '-0.03em',
-                  color: '#1E293B',
                   marginBottom: 0
                 }}
               >
@@ -61,12 +89,14 @@ export const Sidebar = () => {
               </div>
             </div>
             <p 
-              className="text-left lowercase"
+              className={cn(
+                "text-left lowercase transition-colors",
+                isDarkMode ? "text-white/80" : "text-[#64748B]"
+              )}
               style={{ 
                 fontFamily: "'Inter', 'Outfit', ui-sans-serif, system-ui, sans-serif",
                 fontWeight: 400,
-                fontSize: '11px',
-                color: '#64748B'
+                fontSize: '11px'
               }}
             >
               Akıllı Sadakat Sistemi
@@ -76,7 +106,7 @@ export const Sidebar = () => {
       </div>
 
       {/* Premium Toggle - Compact */}
-      {/* <div className="px-3 pt-4">
+      <div className="px-3 pt-4">
         <button
           onClick={togglePremium}
           className={cn(
@@ -108,7 +138,7 @@ export const Sidebar = () => {
             )} />
           </div>
         </button>
-      </div> */}
+      </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-3 pt-5 overflow-y-auto">

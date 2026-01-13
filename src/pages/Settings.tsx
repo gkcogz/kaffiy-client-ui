@@ -44,6 +44,8 @@ import { cn } from "@/lib/utils";
 import { usePremium } from "@/contexts/PremiumContext";
 import { useToast } from "@/hooks/use-toast";
 import { useDashboardCards, DASHBOARD_CARDS } from "@/contexts/DashboardCardsContext";
+import { useTheme } from "@/hooks/use-theme";
+import { Sun, Moon } from "lucide-react";
 
 const Settings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -51,6 +53,7 @@ const Settings = () => {
   const { isPremium } = usePremium();
   const { toast } = useToast();
   const { cardVisibility, toggleCard, resetToDefault } = useDashboardCards();
+  const { theme, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
@@ -158,12 +161,12 @@ const Settings = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-1">
                     <h2 className="text-xl font-semibold text-foreground">Halic Kahve</h2>
-                    {/* {isPremium && (
+                    {isPremium && (
                       <span className="flex items-center gap-1 bg-gold/10 text-gold text-xs font-semibold px-2.5 py-1 rounded-full">
                         <Crown className="w-3 h-3" />
                         Premium
                       </span>
-                    )} */}
+                    )}
                   </div>
                   <a
                     href="mailto:info@caferosetta.com"
@@ -402,14 +405,30 @@ const Settings = () => {
             <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
               <h3 className="text-lg font-semibold text-foreground mb-6">Görünüm Ayarları</h3>
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-foreground">Karanlık Mod</p>
-                    <p className="text-sm text-muted-foreground">Karanlık tema kullan</p>
+                <div className="flex items-center justify-between p-4 rounded-xl bg-muted/20 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    {theme === "dark" ? (
+                      <div className="w-10 h-10 rounded-xl bg-[#C2410C]/10 flex items-center justify-center">
+                        <Moon className="w-5 h-5 text-[#C2410C]" />
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center">
+                        <Sun className="w-5 h-5 text-gold" />
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-medium text-foreground">Karanlık Mod</p>
+                      <p className="text-sm text-muted-foreground">
+                        {theme === "dark" ? "Karanlık tema aktif" : "Aydınlık tema aktif"}
+                      </p>
+                    </div>
                   </div>
-                  <Switch />
+                  <Switch 
+                    checked={theme === "dark"}
+                    onCheckedChange={toggleTheme}
+                  />
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-4 rounded-xl bg-muted/20 border border-border/30">
                   <div>
                     <p className="font-medium text-foreground">Kompakt Görünüm</p>
                     <p className="text-sm text-muted-foreground">Daha az boşluk kullan</p>
@@ -486,27 +505,25 @@ const Settings = () => {
                 <div className="p-4 rounded-xl bg-muted/20">
                   <div className="flex items-center justify-between mb-2">
                     <p className="font-medium text-foreground">Mevcut Plan</p>
-                    {/* {isPremium ? (
+                    {isPremium ? (
                       <span className="flex items-center gap-1 bg-gold/10 text-gold text-xs font-semibold px-2.5 py-1 rounded-full">
                         <Crown className="w-3 h-3" />
                         Premium
                       </span>
                     ) : (
                       <span className="text-xs text-muted-foreground">Ücretsiz</span>
-                    )} */}
-                    <span className="text-xs text-muted-foreground">Ücretsiz</span>
+                    )}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {/* {isPremium ? "Premium özellikler aktif" : "Premium'a geçerek daha fazla özellik kullanın"} */}
-                    Plan yönetimi
+                    {isPremium ? "Premium özellikler aktif" : "Premium'a geçerek daha fazla özellik kullanın"}
                   </p>
                 </div>
-                {/* {!isPremium && (
+                {!isPremium && (
                   <Button className="w-full rounded-xl gap-2">
                     <Crown className="w-4 h-4" />
                     Premium'a Geç
                   </Button>
-                )} */}
+                )}
               </div>
             </div>
           </TabsContent>

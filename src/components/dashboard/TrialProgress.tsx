@@ -79,7 +79,7 @@ export const TrialProgress = ({ current, limit }: TrialProgressProps) => {
       
       <Progress value={percentage} className={cn("h-1.5 transition-all", getProgressColor())} />
       
-      {/* <Button 
+      <Button 
         onClick={() => navigate("/settings?tab=billing")}
         className={cn(
           "w-full mt-3 h-8 text-xs font-semibold rounded-lg transition-all relative overflow-hidden group",
@@ -101,7 +101,7 @@ export const TrialProgress = ({ current, limit }: TrialProgressProps) => {
         <p className="text-[10px] text-muted-foreground mt-2 text-center">
           Premium'a yükselterek sınırsız müşteri ekleyin
         </p>
-      )} */}
+      )}
     </div>
   );
 };

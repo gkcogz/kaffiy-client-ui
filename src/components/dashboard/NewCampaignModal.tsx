@@ -40,6 +40,7 @@ interface Campaign {
   conversions: number;
   conversionRate: number;
   description: string;
+  personLimit?: number;
 }
 
 interface NewCampaignModalProps {
@@ -56,6 +57,7 @@ export const NewCampaignModal = ({ open, onOpenChange, editingCampaign, onSave }
   const [offerType, setOfferType] = useState("");
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
+  const [personLimit, setPersonLimit] = useState<string>("");
 
   // Parse Turkish date string to Date object
   const parseTurkishDate = (dateStr: string): Date | undefined => {
@@ -103,6 +105,7 @@ export const NewCampaignModal = ({ open, onOpenChange, editingCampaign, onSave }
       const parsedEndDate = parseTurkishDate(editingCampaign.endDate);
       setStartDate(parsedStartDate);
       setEndDate(parsedEndDate);
+      setPersonLimit(editingCampaign.personLimit?.toString() || "");
     } else if (open && !editingCampaign) {
       // Set default values for new campaign
       setCampaignName("Hafta Sonu İndirimi");
@@ -115,6 +118,7 @@ export const NewCampaignModal = ({ open, onOpenChange, editingCampaign, onSave }
       nextWeek.setDate(today.getDate() + 7);
       setStartDate(today);
       setEndDate(nextWeek);
+      setPersonLimit("");
     }
   }, [open, editingCampaign]);
 
@@ -140,6 +144,7 @@ export const NewCampaignModal = ({ open, onOpenChange, editingCampaign, onSave }
       reach: editingCampaign?.reach || 0,
       conversions: editingCampaign?.conversions || 0,
       conversionRate: editingCampaign?.conversionRate || 0,
+      personLimit: personLimit ? parseInt(personLimit, 10) : undefined,
     };
 
     if (onSave) {
@@ -323,6 +328,25 @@ export const NewCampaignModal = ({ open, onOpenChange, editingCampaign, onSave }
                 </PopoverContent>
               </Popover>
             </div>
+          </div>
+
+          {/* Person Limit */}
+          <div className="space-y-1.5">
+            <Label htmlFor="personLimit" className="text-xs font-medium text-foreground">
+              Kişi Limiti (Opsiyonel)
+            </Label>
+            <Input
+              id="personLimit"
+              type="number"
+              min="1"
+              placeholder="Örn: 100 (boş bırakılırsa limit yok)"
+              value={personLimit}
+              onChange={(e) => setPersonLimit(e.target.value)}
+              className="h-9 rounded-lg border-border/50 bg-muted/30 focus:bg-background transition-colors placeholder:text-muted-foreground/60 text-sm"
+            />
+            <p className="text-[10px] text-muted-foreground">
+              Belirtilen kişi sayısına ulaşıldığında kampanya otomatik olarak duraklatılacaktır.
+            </p>
           </div>
 
           {/* Actions */}
