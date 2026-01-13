@@ -34,7 +34,24 @@ const defaultVisibility: DashboardCardVisibility = {
   "card-trial-progress": true,
 };
 
-const STORAGE_KEY = "fidelio-dashboard-cards";
+const COOKIE_NAME = "fidelio-dashboard-cards";
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
+
+// Cookie utility functions
+const getCookie = (name: string): string | null => {
+  if (typeof document === "undefined") return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    return parts.pop()?.split(';').shift() || null;
+  }
+  return null;
+};
+
+const setCookie = (name: string, value: string, maxAge: number) => {
+  if (typeof document === "undefined") return;
+  document.cookie = `${name}=${value}; path=/; max-age=${maxAge}`;
+};
 
 interface DashboardCardsContextType {
   cardVisibility: DashboardCardVisibility;
@@ -49,7 +66,7 @@ const DashboardCardsContext = createContext<DashboardCardsContextType | undefine
 export const DashboardCardsProvider = ({ children }: { children: ReactNode }) => {
   const [cardVisibility, setCardVisibilityState] = useState<DashboardCardVisibility>(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = getCookie(COOKIE_NAME);
       if (stored) {
         const parsed = JSON.parse(stored);
         // Merge stored settings with default to handle new cards or removed cards gracefully
@@ -63,7 +80,7 @@ export const DashboardCardsProvider = ({ children }: { children: ReactNode }) =>
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cardVisibility));
+      setCookie(COOKIE_NAME, JSON.stringify(cardVisibility), COOKIE_MAX_AGE);
     } catch (error) {
       console.error("Error saving dashboard card settings:", error);
     }

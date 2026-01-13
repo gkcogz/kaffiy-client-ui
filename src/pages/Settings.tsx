@@ -26,16 +26,16 @@ import {
   Save,
   LogOut,
   Shield,
-  Bell,
+  Bell, 
   Crown,
   Coffee,
   TrendingUp,
   Star,
   Instagram,
   Globe,
-  Palette,
+  Palette, 
   LayoutDashboard,
-  CreditCard,
+  CreditCard, 
   HelpCircle,
   Home
 } from "lucide-react";
@@ -45,15 +45,17 @@ import { usePremium } from "@/contexts/PremiumContext";
 import { useToast } from "@/hooks/use-toast";
 import { useDashboardCards, DASHBOARD_CARDS } from "@/contexts/DashboardCardsContext";
 import { useTheme } from "@/hooks/use-theme";
+import { useDashboardView } from "@/hooks/use-dashboard-view";
 import { Sun, Moon } from "lucide-react";
 
 const Settings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { isPremium } = usePremium();
+  const { isPremium, togglePremium } = usePremium();
   const { toast } = useToast();
   const { cardVisibility, toggleCard, resetToDefault } = useDashboardCards();
   const { theme, toggleTheme } = useTheme();
+  const { isSimpleView, setViewMode } = useDashboardView();
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
@@ -141,7 +143,7 @@ const Settings = () => {
             <TabsTrigger value="help" className="rounded-lg gap-2">
               <HelpCircle className="w-4 h-4" />
               <span className="hidden sm:inline">Yardım</span>
-            </TabsTrigger>
+              </TabsTrigger>
           </TabsList>
 
           {/* Profile Tab */}
@@ -190,7 +192,7 @@ const Settings = () => {
                     <Instagram className="w-3.5 h-3.5" />
                     <span>@halickahve</span>
                   </a>
-                </div>
+                  </div>
 
                 <div className="flex gap-2">
                   {isEditing ? (
@@ -209,8 +211,8 @@ const Settings = () => {
                     </Button>
                   )}
                 </div>
-              </div>
-            </div>
+                  </div>
+                </div>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -231,7 +233,7 @@ const Settings = () => {
                   </div>
                 </div>
               ))}
-            </div>
+                  </div>
 
             {/* Profile Details */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -268,18 +270,18 @@ const Settings = () => {
                         disabled={!isEditing}
                         className="rounded-xl pl-10"
                       />
-                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Adres</Label>
+                </div>
+                <div className="space-y-2">
+                  <Label>Adres</Label>
                     <div className="relative">
                       <MapPin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                       <Input 
                         defaultValue="Caferağa Mah. Moda Cad. No:45, Kadıköy" 
                         disabled={!isEditing}
                         className="rounded-xl pl-10"
-                      />
-                    </div>
+                  />
+                </div>
                   </div>
                   <div className="space-y-2">
                     <Label>Web Sitesi</Label>
@@ -307,10 +309,10 @@ const Settings = () => {
                       >
                         @halickahve
                       </a>
-                    </div>
                   </div>
                 </div>
               </div>
+            </div>
 
               {/* Quick Actions */}
               <div className="space-y-6">
@@ -364,7 +366,7 @@ const Settings = () => {
                   <Button variant="outline" className="w-full rounded-xl gap-2 text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive">
                     <LogOut className="w-4 h-4" />
                     Çıkış Yap
-                  </Button>
+              </Button>
                 </div>
               </div>
             </div>
@@ -381,21 +383,21 @@ const Settings = () => {
                     <p className="text-sm text-muted-foreground">Önemli güncellemeler için e-posta alın</p>
                   </div>
                   <Switch />
-                </div>
+                      </div>
                 <div className="flex items-center justify-between">
-                  <div>
+                      <div>
                     <p className="font-medium text-foreground">Push Bildirimleri</p>
                     <p className="text-sm text-muted-foreground">Tarayıcı bildirimleri alın</p>
                   </div>
                   <Switch />
-                </div>
+                      </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-foreground">Kampanya Bildirimleri</p>
                     <p className="text-sm text-muted-foreground">Yeni kampanyalar hakkında bilgilendirilme</p>
-                  </div>
+                    </div>
                   <Switch defaultChecked />
-                </div>
+                  </div>
               </div>
             </div>
           </TabsContent>
@@ -414,7 +416,7 @@ const Settings = () => {
                     ) : (
                       <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center">
                         <Sun className="w-5 h-5 text-gold" />
-                      </div>
+                    </div>
                     )}
                     <div>
                       <p className="font-medium text-foreground">Karanlık Mod</p>
@@ -429,7 +431,7 @@ const Settings = () => {
                   />
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-xl bg-muted/20 border border-border/30">
-                  <div>
+                <div>
                     <p className="font-medium text-foreground">Kompakt Görünüm</p>
                     <p className="text-sm text-muted-foreground">Daha az boşluk kullan</p>
                   </div>
@@ -441,38 +443,58 @@ const Settings = () => {
 
           {/* Dashboard Tab */}
           <TabsContent value="dashboard" className="mt-6 space-y-4">
+            {/* Dashboard View Mode */}
             <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">Dashboard Kartları</h3>
-                  <p className="text-sm text-muted-foreground">Gösterilecek kartları seçin</p>
+              <h3 className="text-lg font-semibold text-foreground mb-6">Dashboard Görünümü</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-xl bg-muted/20 border border-border/30">
+                  <div>
+                    <p className="font-medium text-foreground">Basit Görünüm</p>
+                    <p className="text-sm text-muted-foreground">Sadeleştirilmiş dashboard görünümü</p>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowResetDialog(true)}
-                  className="rounded-xl"
-                >
-                  Varsayılana Sıfırla
-                </Button>
-              </div>
-              <div className="space-y-3">
-                {DASHBOARD_CARDS.map((card) => (
-                  <div key={card.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/20">
-                    <div>
-                      <p className="font-medium text-foreground">{card.name}</p>
-                      {card.description && (
-                        <p className="text-xs text-muted-foreground">{card.description}</p>
-                      )}
-                    </div>
-                    <Switch
-                      checked={cardVisibility[card.id]}
-                      onCheckedChange={() => toggleCard(card.id)}
-                    />
+                  <Switch
+                    checked={isSimpleView}
+                    onCheckedChange={(checked) => setViewMode(checked ? "simple" : "standard")}
+                  />
                   </div>
-                ))}
+                  </div>
+                </div>
+
+            {/* Dashboard Cards (only show in standard view) */}
+            {!isSimpleView && (
+              <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground">Dashboard Kartları</h3>
+                    <p className="text-sm text-muted-foreground">Gösterilecek kartları seçin</p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowResetDialog(true)}
+                    className="rounded-xl"
+                  >
+                    Varsayılana Sıfırla
+                  </Button>
+                    </div>
+                <div className="space-y-3">
+                  {DASHBOARD_CARDS.map((card) => (
+                    <div key={card.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/20">
+                    <div>
+                        <p className="font-medium text-foreground">{card.name}</p>
+                        {card.description && (
+                          <p className="text-xs text-muted-foreground">{card.description}</p>
+                        )}
+                    </div>
+                      <Switch
+                        checked={cardVisibility[card.id]}
+                        onCheckedChange={() => toggleCard(card.id)}
+                      />
+                  </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </TabsContent>
 
           {/* Security Tab */}
@@ -499,31 +521,61 @@ const Settings = () => {
 
           {/* Billing Tab */}
           <TabsContent value="billing" className="mt-6">
-            <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-6">Faturalandırma</h3>
-              <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-muted/20">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="font-medium text-foreground">Mevcut Plan</p>
-                    {isPremium ? (
-                      <span className="flex items-center gap-1 bg-gold/10 text-gold text-xs font-semibold px-2.5 py-1 rounded-full">
-                        <Crown className="w-3 h-3" />
-                        Premium
-                      </span>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">Ücretsiz</span>
-                    )}
+            <div className="space-y-4">
+              {/* Premium Toggle */}
+              <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center",
+                      isPremium ? "bg-gold/10" : "bg-muted/40"
+                    )}>
+                      <Crown className={cn(
+                        "w-5 h-5",
+                        isPremium ? "text-gold" : "text-muted-foreground"
+                      )} />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">Premium</p>
+                      <p className="text-sm text-muted-foreground">
+                        {isPremium ? "Premium özellikler aktif" : "Premium özellikler kapalı"}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    {isPremium ? "Premium özellikler aktif" : "Premium'a geçerek daha fazla özellik kullanın"}
-                  </p>
+                  <Switch
+                    checked={isPremium}
+                    onCheckedChange={togglePremium}
+                  />
                 </div>
-                {!isPremium && (
-                  <Button className="w-full rounded-xl gap-2">
-                    <Crown className="w-4 h-4" />
-                    Premium'a Geç
-                  </Button>
-                )}
+              </div>
+
+              {/* Current Plan Info */}
+              <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-6">Faturalandırma</h3>
+                <div className="space-y-4">
+                  <div className="p-4 rounded-xl bg-muted/20">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="font-medium text-foreground">Mevcut Plan</p>
+                      {isPremium ? (
+                        <span className="flex items-center gap-1 bg-gold/10 text-gold text-xs font-semibold px-2.5 py-1 rounded-full">
+                          <Crown className="w-3 h-3" />
+                          Premium
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Ücretsiz</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {isPremium ? "Premium özellikler aktif" : "Premium'a geçerek daha fazla özellik kullanın"}
+                    </p>
+                  </div>
+                  {!isPremium && (
+                    <Button className="w-full rounded-xl gap-2">
+                      <Crown className="w-4 h-4" />
+                      Premium'a Geç
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </TabsContent>
@@ -538,13 +590,13 @@ const Settings = () => {
                   <p className="text-sm text-muted-foreground">
                     SSS sayfasını ziyaret ederek yaygın soruların cevaplarını bulabilirsiniz.
                   </p>
-                </div>
+                    </div>
                 <div className="p-4 rounded-xl bg-muted/20">
                   <p className="font-medium text-foreground mb-2">Destek Ekibi</p>
                   <p className="text-sm text-muted-foreground">
                     Sorularınız için destek ekibimizle iletişime geçebilirsiniz.
                   </p>
-                </div>
+                    </div>
                 <Button variant="outline" className="w-full rounded-xl">
                   Destek İletişim
                 </Button>

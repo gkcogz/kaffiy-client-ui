@@ -1,16 +1,29 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
-const data = [
-  { name: "Geri Dönen", value: 70, color: "hsl(72 22% 38%)" },
-  { name: "Yeni", value: 30, color: "hsl(42 55% 55%)" },
-];
+type PeriodType = "daily" | "weekly" | "monthly";
 
-export const LoyaltyDonut = () => {
+const periodData = {
+  daily: { returning: 70, new: 30 },
+  weekly: { returning: 65, new: 35 },
+  monthly: { returning: 72, new: 28 },
+};
+
+interface LoyaltyDonutProps {
+  period?: PeriodType;
+}
+
+export const LoyaltyDonut = ({ period = "daily" }: LoyaltyDonutProps) => {
+  const dataValues = periodData[period];
+  const data = [
+    { name: "Geri Dönen", value: dataValues.returning, color: "hsl(72 22% 38%)" },
+    { name: "Yeni", value: dataValues.new, color: "hsl(42 55% 55%)" },
+  ];
+
   return (
     <div className="stat-card">
       <div className="mb-2">
         <p className="text-[11px] font-medium text-muted-foreground tracking-wide uppercase mb-1">Geri Dönen vs Yeni</p>
-        <p className="text-2xl font-serif font-semibold text-foreground">70% <span className="text-muted-foreground font-sans text-lg">/</span> 30%</p>
+        <p className="text-2xl font-serif font-semibold text-foreground">{dataValues.returning}% <span className="text-muted-foreground font-sans text-lg">/</span> {dataValues.new}%</p>
       </div>
       <div className="h-36 relative">
         <ResponsiveContainer width="100%" height="100%">

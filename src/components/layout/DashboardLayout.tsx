@@ -17,6 +17,7 @@ import { HalicKahveLogo } from "@/components/Logo";
 import { SearchModal } from "@/components/search/SearchModal";
 import { isWithinInterval, format } from "date-fns";
 import { tr } from "date-fns/locale";
+import { useDashboardView } from "@/hooks/use-dashboard-view";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -47,6 +48,7 @@ export const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
+  const { isSimpleView } = useDashboardView();
   const pageTitle = title || getTitleFromPath(location.pathname);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -164,16 +166,20 @@ export const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
             </Button>
           </div>
           <div className="flex items-center gap-1 lg:gap-2">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => setIsSearchOpen(true)}
-              className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl w-9 h-9 lg:w-10 lg:h-10"
-              aria-label="Ara"
-            >
-              <Search className="w-4 h-4 lg:w-5 lg:h-5" />
-            </Button>
-            <SearchModal open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+            {!isSimpleView && (
+              <>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setIsSearchOpen(true)}
+                  className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl w-9 h-9 lg:w-10 lg:h-10"
+                  aria-label="Ara"
+                >
+                  <Search className="w-4 h-4 lg:w-5 lg:h-5" />
+                </Button>
+                <SearchModal open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+              </>
+            )}
             <Popover open={isNotificationOpen} onOpenChange={setIsNotificationOpen}>
               <PopoverTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl w-9 h-9 lg:w-10 lg:h-10 relative">

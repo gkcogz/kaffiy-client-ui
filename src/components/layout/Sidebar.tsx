@@ -105,44 +105,8 @@ export const Sidebar = () => {
         </button>
       </div>
 
-      {/* Premium Toggle - Compact */}
-      <div className="px-3 pt-4">
-        <button
-          onClick={togglePremium}
-          className={cn(
-            "w-full rounded-xl px-3 py-2 transition-all duration-200 flex items-center justify-between",
-            isPremium 
-              ? "bg-gradient-to-r from-gold/15 to-gold/5 border border-gold/20" 
-              : "bg-sidebar-accent/40 border border-transparent hover:border-sidebar-border/50"
-          )}
-        >
-          <div className="flex items-center gap-2">
-            <Crown className={cn(
-              "w-3.5 h-3.5",
-              isPremium ? "text-gold" : "text-sidebar-muted"
-            )} />
-            <span className={cn(
-              "text-xs font-medium",
-              isPremium ? "text-gold" : "text-sidebar-foreground/70"
-            )}>
-              Premium
-            </span>
-          </div>
-          <div className={cn(
-            "w-7 h-4 rounded-full transition-colors relative",
-            isPremium ? "bg-gold" : "bg-sidebar-border"
-          )}>
-            <div className={cn(
-              "absolute top-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-transform",
-              isPremium ? "translate-x-3.5" : "translate-x-0.5"
-            )} />
-          </div>
-        </button>
-      </div>
-
       {/* Navigation */}
       <nav className="flex-1 px-3 pt-5 overflow-y-auto">
-        <p className="text-[9px] uppercase tracking-widest text-sidebar-muted font-medium mb-2 px-2">Menü</p>
         <ul className="space-y-0.5">
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -226,9 +190,7 @@ export const Sidebar = () => {
                 fontFamily: "'DM Sans', 'Inter', ui-sans-serif, system-ui, sans-serif"
               }}
             >
-              Powered by <span className="font-medium text-sidebar-muted">Akıllı Sadakat Sistemi</span>
-              <br />
-              <span className="text-[8px]">Akıllı Sadakat Sistemi</span>
+              Powered by <span className="font-medium text-sidebar-muted">kaffiy</span>
             </p>
           </button>
         </div>
