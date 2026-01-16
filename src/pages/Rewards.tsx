@@ -257,7 +257,7 @@ const Rewards = () => {
                 <div className="flex items-center gap-4 mb-4">
                   <div className="flex items-center gap-1.5 bg-sage/10 px-2.5 py-1 rounded-full">
                     <Star className="w-3 h-3 text-sage" />
-                    <span className="text-xs font-semibold text-sage">{reward.stampsRequired} kaşe</span>
+                    <span className="text-xs font-semibold text-sage">{reward.stampsRequired} puan</span>
                   </div>
                   <span className="text-xs text-muted-foreground">₺{reward.value} değer</span>
                 </div>

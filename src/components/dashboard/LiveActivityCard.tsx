@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { UserPlus, Coins, Gift } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useDashboardDateRange } from "@/contexts/DashboardDateRangeContext";
 import {
   Popover,
   PopoverContent,
@@ -32,6 +33,9 @@ const mockActivities: ActivityItem[] = [
 ];
 
 export const LiveActivityCard = () => {
+  const { isCustomRange, rangeDays } = useDashboardDateRange();
+  const scaleValue = (value: number) => (isCustomRange ? Math.round(value * rangeDays) : value);
+
   return (
     <div 
       className="relative rounded-3xl p-6 lg:p-7 backdrop-blur-xl transition-all duration-300 hover:shadow-xl"
@@ -54,7 +58,9 @@ export const LiveActivityCard = () => {
               <UserPlus className="w-4 h-4 text-foreground/60" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-foreground mb-1 tabular-nums tracking-tight">13</p>
+          <p className="text-2xl font-bold text-foreground mb-1 tabular-nums tracking-tight">
+            {scaleValue(13)}
+          </p>
           <p className="text-xs text-muted-foreground font-medium">Yeni Ziyaretçi</p>
         </div>
         
@@ -64,7 +70,9 @@ export const LiveActivityCard = () => {
               <Coins className="w-4 h-4 text-foreground/60" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-foreground mb-1 tabular-nums tracking-tight">247</p>
+          <p className="text-2xl font-bold text-foreground mb-1 tabular-nums tracking-tight">
+            {scaleValue(247)}
+          </p>
           <p className="text-xs text-muted-foreground font-medium">Kazanılan Puan</p>
         </div>
         
@@ -74,7 +82,9 @@ export const LiveActivityCard = () => {
               <Gift className="w-4 h-4 text-foreground/60" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-foreground mb-1 tabular-nums tracking-tight">5</p>
+          <p className="text-2xl font-bold text-foreground mb-1 tabular-nums tracking-tight">
+            {scaleValue(5)}
+          </p>
           <p className="text-xs text-muted-foreground font-medium">Harcanan Ödül</p>
         </div>
       </div>

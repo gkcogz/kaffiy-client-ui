@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Users, UserCheck, UserPlus, TrendingUp, Calendar, Clock, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useDashboardDateRange } from "@/contexts/DashboardDateRangeContext";
 
 type TabType = "thisWeek" | "nextWeek";
 
@@ -18,12 +19,19 @@ export const WeeklyStatsCard = ({
   peakHour = "14:00-16:00"
 }: PredictiveAnalyticsProps) => {
   const [activeTab, setActiveTab] = useState<TabType>("thisWeek");
+  const { isCustomRange, rangeDays } = useDashboardDateRange();
 
   // Last week same day comparison
-  const lastWeekSameDay = 38;
-  const todayVisits = 45;
+  const scaleValue = (value: number) => Math.round(value * rangeDays);
+  const lastWeekSameDay = isCustomRange ? scaleValue(38) : 38;
+  const todayVisits = isCustomRange ? scaleValue(45) : 45;
   const comparisonPercent = Math.round(((todayVisits - lastWeekSameDay) / lastWeekSameDay) * 100);
   const dayName = "Salı";
+  const returningCount = isCustomRange ? scaleValue(32) : 32;
+  const newCount = isCustomRange ? scaleValue(13) : 13;
+  const predictedVisitCount = isCustomRange ? scaleValue(predictedVisits) : predictedVisits;
+  const nextReturningCount = isCustomRange ? scaleValue(78) : 78;
+  const nextNewCount = isCustomRange ? scaleValue(42) : 42;
 
   const thisWeekStats = [
     {
@@ -35,13 +43,13 @@ export const WeeklyStatsCard = ({
     },
     {
       label: "Dönen",
-      value: 32,
+      value: returningCount,
       icon: UserCheck,
       color: "text-sage-dark"
     },
     {
       label: "Yeni",
-      value: 13,
+      value: newCount,
       icon: UserPlus,
       color: "text-gold"
     }
@@ -50,20 +58,20 @@ export const WeeklyStatsCard = ({
   const nextWeekStats = [
     {
       label: "Tahmini",
-      value: predictedVisits,
+      value: predictedVisitCount,
       icon: Sparkles,
       trend: { value: 8, isPositive: true },
       color: "text-sage-dark"
     },
     {
       label: "Dönen",
-      value: 78,
+      value: nextReturningCount,
       icon: UserCheck,
       color: "text-sage-dark"
     },
     {
       label: "Yeni",
-      value: 42,
+      value: nextNewCount,
       icon: UserPlus,
       color: "text-gold"
     }

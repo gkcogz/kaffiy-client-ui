@@ -17,6 +17,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { usePremium } from "@/contexts/PremiumContext";
 import { useDashboardCards } from "@/contexts/DashboardCardsContext";
 import { useDashboardView } from "@/hooks/use-dashboard-view";
+import { DashboardDateRangeProvider } from "@/contexts/DashboardDateRangeContext";
 import { LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -40,7 +41,8 @@ const Index = () => {
 
   // Desktop & Tablet: Show Dashboard based on view mode
   return (
-    <DashboardLayout>
+    <DashboardDateRangeProvider>
+      <DashboardLayout>
       {/* Dashboard Panels Shortcut - Fixed top right */}
       <Button
         variant="ghost"
@@ -184,7 +186,8 @@ const Index = () => {
 
       {/* Chatbot - Fixed bottom right */}
       <Chatbot />
-    </DashboardLayout>
+      </DashboardLayout>
+    </DashboardDateRangeProvider>
   );
 };
 

@@ -30,16 +30,22 @@ export const BaristaView = () => {
   const [selectedBarista, setSelectedBarista] = useState<string | null>(null);
   const [isBaristaDialogOpen, setIsBaristaDialogOpen] = useState(false);
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [pointsToAdd, setPointsToAdd] = useState(1);
+  const dailyRewardLimit = 1;
+  const rewardCost = 5;
+  const rewardGoal = 5;
+  const [dailyRewardsUsed, setDailyRewardsUsed] = useState(0);
   const { toast } = useToast();
 
   const handleQRScan = () => {
+    const basePoints = customerName ? currentStamps : 3;
     setCustomerName("Ahmet Y.");
-    setCurrentStamps(7);
+    setCurrentStamps(Math.min(rewardGoal, basePoints + pointsToAdd));
     setShowSuccessAnimation(true);
     setTimeout(() => setShowSuccessAnimation(false), 2000);
     toast({
       title: "Müşteri bulundu",
-      description: "Ahmet Y. - 7/10 kaşe",
+      description: `Ahmet Y. - +${pointsToAdd} puan`,
     });
   };
 
@@ -52,18 +58,36 @@ export const BaristaView = () => {
       });
       return;
     }
+
+    if (dailyRewardsUsed >= dailyRewardLimit) {
+      toast({
+        title: "Günlük limit doldu",
+        description: "Bugün için ücretsiz kahve limiti doldu.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (currentStamps < rewardCost) {
+      toast({
+        title: "Yetersiz puan",
+        description: `Ödül için en az ${rewardCost} puan gerekli.`,
+        variant: "destructive",
+      });
+      return;
+    }
     
     setShowSuccessAnimation(true);
     setTimeout(() => setShowSuccessAnimation(false), 2000);
+    setDailyRewardsUsed((prev) => Math.min(dailyRewardLimit, prev + 1));
+    setCurrentStamps((prev) => Math.max(0, prev - rewardCost));
     toast({
       title: "Ödül verildi!",
-      description: `${customerName} ödülünü kullandı.`,
+      description: `${customerName} ödülünü kullandı. -${rewardCost} puan`,
     });
-    setCustomerName(null);
-    setCurrentStamps(0);
   };
 
-  const isCloseToReward = currentStamps >= 8;
+  const isCloseToReward = currentStamps >= rewardGoal - 1;
 
   const isDark = theme === "dark";
 
@@ -254,7 +278,7 @@ export const BaristaView = () => {
               <p className={cn(
                 "text-sm font-medium transition-colors",
                 isDark ? "text-white/60" : "text-muted-foreground"
-              )}>Kaşe</p>
+              )}>Puan</p>
             </div>
             
             {/* Stamp Progress - Coffee cup icons */}
@@ -263,7 +287,7 @@ export const BaristaView = () => {
                 <span className={cn(
                   "text-xs font-medium transition-colors",
                   isDark ? "text-white/70" : "text-muted-foreground"
-                )}>Kaşe Durumu</span>
+                )}>Puan Durumu</span>
                 <span className={cn(
                   "text-sm font-bold px-3 py-1 rounded-full",
                   isCloseToReward 
@@ -272,12 +296,12 @@ export const BaristaView = () => {
                       ? "bg-[#C2410C]/20 text-[#C2410C]"
                       : "bg-sage/10 text-sage"
                 )}>
-                  {currentStamps}/10
+                  {currentStamps}/{rewardGoal}
                 </span>
               </div>
               
-              <div className="grid grid-cols-10 gap-1.5">
-                {Array.from({ length: 10 }).map((_, i) => (
+              <div className="grid grid-cols-5 gap-1.5">
+                {Array.from({ length: rewardGoal }).map((_, i) => (
                   <div
                     key={i}
                     className={cn(
@@ -306,7 +330,7 @@ export const BaristaView = () => {
                   <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
                   <p className="text-xs text-gold font-semibold flex items-center gap-1">
                     <Sparkles className="w-3 h-3" />
-                    {10 - currentStamps} kaşe kaldı!
+                    {rewardGoal - currentStamps} puan kaldı!
                   </p>
                   <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
                 </div>
@@ -398,6 +422,57 @@ export const BaristaView = () => {
                 </button>
               </div>
 
+              {/* Points Selector */}
+              <div className="flex items-center justify-center">
+                <div className={cn(
+                  "inline-flex items-center gap-3 rounded-2xl px-3 py-2 border",
+                  isDark
+                    ? "bg-white/5 border-white/10"
+                    : "bg-white border-border/50 shadow-sm"
+                )}>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setPointsToAdd((prev) => Math.max(1, prev - 1))}
+                    className={cn(
+                      "w-9 h-9 rounded-xl",
+                      isDark ? "text-white/80 hover:text-white" : "text-foreground"
+                    )}
+                    aria-label="Puan azalt"
+                  >
+                    -
+                  </Button>
+                  <div className="text-center min-w-[64px]">
+                    <p className={cn(
+                      "text-[10px] uppercase tracking-wide",
+                      isDark ? "text-white/50" : "text-muted-foreground"
+                    )}>
+                      Puan
+                    </p>
+                    <p className={cn(
+                      "text-lg font-bold",
+                      isDark ? "text-white" : "text-foreground"
+                    )}>
+                      {pointsToAdd}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setPointsToAdd((prev) => Math.min(rewardGoal, prev + 1))}
+                    className={cn(
+                      "w-9 h-9 rounded-xl",
+                      isDark ? "text-white/80 hover:text-white" : "text-foreground"
+                    )}
+                    aria-label="Puan artır"
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
+
               {/* Primary Action Button - Always Brand Orange */}
               <Button
                 onClick={() => {
@@ -460,8 +535,21 @@ export const BaristaView = () => {
                   <p className={cn(
                     "text-sm transition-colors",
                     isDark ? "text-white/70" : "text-muted-foreground"
-                  )}>10 kaşe karşılığı hediye</p>
+                  )}>{rewardCost} puan karşılığı hediye</p>
                 </div>
+              </div>
+
+              <div className={cn(
+                "rounded-2xl px-4 py-3 border flex items-center justify-between text-xs",
+                isDark ? "bg-white/5 border-white/10 text-white/70" : "bg-white border-border/50 text-muted-foreground"
+              )}>
+                <span>Günlük limit</span>
+                <span className={cn(
+                  "font-semibold",
+                  dailyRewardsUsed >= dailyRewardLimit ? "text-destructive" : "text-success"
+                )}>
+                  {dailyRewardsUsed}/{dailyRewardLimit}
+                </span>
               </div>
               
               <Button

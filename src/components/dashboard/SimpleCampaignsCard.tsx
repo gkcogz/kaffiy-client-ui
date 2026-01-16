@@ -28,8 +28,26 @@ interface Campaign {
 }
 
 const mockCampaigns: Campaign[] = [
-  { id: "1", name: "Özel Teklif", description: "14:00–17:00 arası %10 indirim", status: "active", reach: 245, usage: 34, daysLeft: 3, type: "discount" },
-  { id: "2", name: "Hafta Sonu Mutluluğu", description: "Cumartesi-Pazar 2. kahve bedava", status: "active", reach: 189, usage: 28, daysLeft: 5, type: "reward" },
+  {
+    id: "1",
+    name: "Doğum Günü Kampanyası",
+    description: "Doğum gününde 1 dilim pasta hediye",
+    status: "active",
+    reach: 84,
+    usage: 26,
+    daysLeft: 180,
+    type: "reward",
+  },
+  {
+    id: "2",
+    name: "Kahve Yanı Tatlı İndirimi",
+    description: "Kahve alana yanında tatlı %25 indirimli",
+    status: "active",
+    reach: 210,
+    usage: 92,
+    daysLeft: 180,
+    type: "discount",
+  },
 ];
 
 export const SimpleCampaignsCard = () => {

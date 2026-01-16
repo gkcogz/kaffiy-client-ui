@@ -144,7 +144,7 @@ const Customers = () => {
 
   const handleExport = () => {
     // Create CSV content with masked customer data (same as displayed on dashboard)
-    const headers = ["Ad Soyad", "E-posta", "Telefon", "Kaşe", "Toplam Ziyaret", "Son Ziyaret", "Ziyaret Sıklığı", "Durum", "Katılım Tarihi", "Favori Ürün"];
+    const headers = ["Ad Soyad", "E-posta", "Telefon", "Puan", "Toplam Ziyaret", "Son Ziyaret", "Ziyaret Sıklığı", "Durum", "Katılım Tarihi", "Favori Ürün"];
     const rows = customers.map(customer => [
       maskLastName(customer.name),
       maskEmail(customer.email),
@@ -337,7 +337,7 @@ const Customers = () => {
                 <tr className="border-b border-border/50">
                   <th className="text-left p-4 text-xs font-semibold text-muted-foreground">Müşteri</th>
                   <th className="text-left p-4 text-xs font-semibold text-muted-foreground hidden md:table-cell">İletişim</th>
-                  <th className="text-center p-4 text-xs font-semibold text-muted-foreground">Kaşe</th>
+                  <th className="text-center p-4 text-xs font-semibold text-muted-foreground">Puan</th>
                   <th className="text-center p-4 text-xs font-semibold text-muted-foreground hidden lg:table-cell">Ziyaret</th>
                   <th className="text-center p-4 text-xs font-semibold text-muted-foreground hidden lg:table-cell">Sıklık</th>
                   <th className="text-center p-4 text-xs font-semibold text-muted-foreground">Durum</th>
@@ -410,7 +410,7 @@ const Customers = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="rounded-xl">
                           <DropdownMenuItem>Profili Görüntüle</DropdownMenuItem>
-                          <DropdownMenuItem>Kaşe Ekle</DropdownMenuItem>
+                          <DropdownMenuItem>Puan Ekle</DropdownMenuItem>
                           <DropdownMenuItem>Mesaj Gönder</DropdownMenuItem>
                           <DropdownMenuItem className="text-destructive">Sil</DropdownMenuItem>
                         </DropdownMenuContent>

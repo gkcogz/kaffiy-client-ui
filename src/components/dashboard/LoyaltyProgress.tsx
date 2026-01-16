@@ -39,7 +39,7 @@ export const LoyaltyProgress = () => {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const dialogRef = useRef<HTMLDivElement>(null);
   
-  // Kaşe Basıldı kaldırıldı, sadece QR Tarama ve Ödül Kullanıldı
+  // Puan Kullanıldı kaldırıldı, sadece QR Tarama ve Ödül Kullanıldı
   const todayActivity: Array<{ label: string; value: number; icon: typeof QrCode | typeof Gift; clickable: boolean }> = [
     { label: "QR Tarama", value: 31, icon: QrCode, clickable: false },
     { label: "Ödül Kullanıldı", value: 4, icon: Gift, clickable: true },
@@ -222,7 +222,7 @@ export const LoyaltyProgress = () => {
                     <p className="text-2xl font-bold text-foreground">
                       {mockRewardDetails.reduce((sum, r) => sum + r.stampCost, 0)}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">Kullanılan Kaşe</p>
+                    <p className="text-xs text-muted-foreground mt-1">Kullanılan Puan</p>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-foreground">
@@ -260,9 +260,9 @@ export const LoyaltyProgress = () => {
                         <p className="font-medium text-foreground">{reward.rewardType}</p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground text-xs mb-1">Kaşe / Zaman</p>
+                        <p className="text-muted-foreground text-xs mb-1">Puan / Zaman</p>
                         <div className="flex items-center gap-2">
-                          <p className="font-semibold text-primary">{reward.stampCost} kaşe</p>
+                          <p className="font-semibold text-primary">{reward.stampCost} puan</p>
                           <span className="text-[10px] text-muted-foreground">
                             {getTimeAgo(reward.timestamp)}
                           </span>
@@ -282,7 +282,7 @@ export const LoyaltyProgress = () => {
                       <p className="font-bold text-primary">{mockRewardDetails.length}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground text-xs mb-1">Kaşe</p>
+                      <p className="text-muted-foreground text-xs mb-1">Puan</p>
                       <p className="font-bold text-primary">
                         {mockRewardDetails.reduce((sum, r) => sum + r.stampCost, 0)}
                       </p>

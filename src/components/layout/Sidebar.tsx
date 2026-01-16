@@ -86,10 +86,10 @@ export const Sidebar = () => {
                 <span className="w-1.5 h-1.5 rounded-full bg-success" />
                 <span className="w-1.5 h-1.5 rounded-full bg-gold" />
                 <span className="w-1.5 h-1.5 rounded-full bg-destructive/80" />
-              </div>
-            </div>
+          </div>
+        </div>
             <p 
-              className={cn(
+          className={cn(
                 "text-left lowercase transition-colors",
                 isDarkMode ? "text-white/80" : "text-[#64748B]"
               )}
@@ -114,31 +114,31 @@ export const Sidebar = () => {
             const isDisabled = item.disabled;
             
             const menuButton = (
-              <button
+                <button
                 onClick={() => !isDisabled && navigate(item.path)}
                 disabled={isDisabled}
-                className={cn(
-                  "group flex items-center gap-2.5 px-2.5 py-2 rounded-lg w-full transition-all duration-150 text-[13px]",
+                  className={cn(
+                    "group flex items-center gap-2.5 px-2.5 py-2 rounded-lg w-full transition-all duration-150 text-[13px]",
                   isDisabled && "cursor-not-allowed opacity-50",
                   !isDisabled && active 
-                    ? "bg-primary text-primary-foreground shadow-sm" 
+                      ? "bg-primary text-primary-foreground shadow-sm" 
                     : !isDisabled && "text-sidebar-foreground/60 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
                   isDisabled && "text-sidebar-foreground/30"
-                )}
-              >
-                <Icon className={cn(
-                  "w-4 h-4 flex-shrink-0",
+                  )}
+                >
+                  <Icon className={cn(
+                    "w-4 h-4 flex-shrink-0",
                   isDisabled && "text-sidebar-muted/30",
                   !isDisabled && active ? "text-primary-foreground" : !isDisabled && "text-sidebar-muted group-hover:text-sidebar-foreground"
-                )} />
-                <span className="flex-1 text-left font-medium">{item.label}</span>
-                {item.hasSubmenu && (
-                  <ChevronRight className={cn(
-                    "w-3.5 h-3.5 opacity-50",
-                    active && "rotate-90"
                   )} />
-                )}
-              </button>
+                  <span className="flex-1 text-left font-medium">{item.label}</span>
+                  {item.hasSubmenu && (
+                    <ChevronRight className={cn(
+                      "w-3.5 h-3.5 opacity-50",
+                      active && "rotate-90"
+                    )} />
+                  )}
+                </button>
             );
 
             if (isDisabled) {
@@ -180,10 +180,10 @@ export const Sidebar = () => {
       {/* Footer - Powered by kaffiy */}
       <div className="px-3 pb-3 pt-2 border-t border-sidebar-border/30">
         <div className="px-2 py-1.5">
-          <button 
+        <button 
             onClick={() => navigate("/")}
             className="w-full text-center cursor-pointer hover:opacity-80 transition-opacity"
-          >
+        >
             <p 
               className="text-[9px] text-sidebar-muted/70 leading-tight"
               style={{ 
@@ -193,7 +193,7 @@ export const Sidebar = () => {
               Powered by <span className="font-medium text-sidebar-muted">kaffiy</span>
             </p>
           </button>
-        </div>
+          </div>
       </div>
     </aside>
   );

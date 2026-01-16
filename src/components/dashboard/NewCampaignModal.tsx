@@ -168,9 +168,9 @@ export const NewCampaignModal = ({ open, onOpenChange, editingCampaign, onSave }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] p-0 gap-0 bg-card border-border/50 rounded-xl overflow-hidden shadow-premium">
+      <DialogContent className="sm:max-w-[500px] p-0 gap-0 bg-card border-border/50 rounded-xl overflow-hidden shadow-premium max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <DialogHeader className="px-5 pt-4 pb-3 border-b border-border/50 bg-gradient-to-r from-primary/5 to-transparent">
+        <DialogHeader className="px-5 pt-3 pb-2 border-b border-border/50 bg-gradient-to-r from-primary/5 to-transparent">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-primary" />
@@ -187,7 +187,7 @@ export const NewCampaignModal = ({ open, onOpenChange, editingCampaign, onSave }
         </DialogHeader>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
+        <form onSubmit={handleSubmit} className="px-5 py-3 space-y-3">
           {/* Campaign Name */}
           <div className="space-y-1.5">
             <Label htmlFor="name" className="text-xs font-medium text-foreground">
@@ -212,7 +212,7 @@ export const NewCampaignModal = ({ open, onOpenChange, editingCampaign, onSave }
               placeholder="Müşterilerinize gösterilecek mesaj..."
               value={campaignMessage}
               onChange={(e) => setCampaignMessage(e.target.value)}
-              className="min-h-[70px] rounded-lg border-border/50 bg-muted/30 focus:bg-background transition-colors resize-none placeholder:text-muted-foreground/60 text-sm"
+              className="min-h-[56px] rounded-lg border-border/50 bg-muted/30 focus:bg-background transition-colors resize-none placeholder:text-muted-foreground/60 text-sm"
             />
           </div>
 
@@ -250,7 +250,7 @@ export const NewCampaignModal = ({ open, onOpenChange, editingCampaign, onSave }
                   type="button"
                   onClick={() => setOfferType(option.value)}
                   className={cn(
-                    "p-2.5 rounded-lg border text-left transition-all duration-200",
+                    "p-2 rounded-lg border text-left transition-all duration-200",
                     offerType === option.value
                       ? "border-primary bg-primary/5 shadow-sm"
                       : "border-border/50 bg-muted/30 hover:border-border hover:bg-muted/50"

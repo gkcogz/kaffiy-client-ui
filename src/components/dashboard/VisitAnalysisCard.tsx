@@ -1,5 +1,6 @@
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip } from "recharts";
 import { cn } from "@/lib/utils";
+import { useDashboardDateRange } from "@/contexts/DashboardDateRangeContext";
 
 // Haftalık veri
 const weeklyData = [
@@ -14,6 +15,12 @@ const weeklyData = [
 
 export const VisitAnalysisCard = () => {
   const returningCustomerRate = 65; // Geri gelen müşteri oranı %
+  const { isCustomRange, rangeDays } = useDashboardDateRange();
+  const multiplier = isCustomRange ? rangeDays / 7 : 1;
+  const chartData = weeklyData.map((item) => ({
+    ...item,
+    visits: Math.round(item.visits * multiplier),
+  }));
 
   return (
     <div 
@@ -29,10 +36,12 @@ export const VisitAnalysisCard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-7">
         {/* Grafik */}
         <div className="lg:col-span-2">
-          <p className="text-sm font-semibold text-foreground/80 uppercase tracking-wide mb-5">Haftalık Ziyaret Trendi</p>
+          <p className="text-sm font-semibold text-foreground/80 uppercase tracking-wide mb-5">
+            {isCustomRange ? "Seçili Aralık Ziyaret Trendi" : "Haftalık Ziyaret Trendi"}
+          </p>
           <div className="h-72 rounded-2xl bg-muted/10 p-4 border border-border/40">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={weeklyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="visitGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="hsl(0, 0%, 40%)" stopOpacity={0.15} />

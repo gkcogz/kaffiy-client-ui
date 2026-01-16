@@ -48,7 +48,7 @@ export const RewardsGrid = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-foreground text-xs lg:text-sm">{reward.name}</h4>
-                    <p className="text-[10px] lg:text-xs text-muted-foreground">{reward.visits} kaşe</p>
+                    <p className="text-[10px] lg:text-xs text-muted-foreground">{reward.visits} puan</p>
                   </div>
                   <span className="text-xs lg:text-sm font-semibold text-foreground">{reward.claimed}</span>
                 </div>

@@ -102,7 +102,7 @@ export const QRVerificationModal = ({ open, onOpenChange }: QRVerificationModalP
               <QrCode className="w-4 h-4 text-olive-dark" />
             </div>
             <div>
-              <DialogTitle className="text-lg text-foreground font-semibold">Kaşe Doğrulama</DialogTitle>
+              <DialogTitle className="text-lg text-foreground font-semibold">Puan Doğrulama</DialogTitle>
               <DialogDescription className="text-muted-foreground text-xs mt-0.5">
                 Müşteri QR kodunu tarayın veya backup kodu girin
               </DialogDescription>
@@ -149,8 +149,8 @@ export const QRVerificationModal = ({ open, onOpenChange }: QRVerificationModalP
               ) : status === "success" ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-success/10">
                   <CheckCircle2 className="w-12 h-12 text-success mb-2" />
-                  <span className="text-success font-semibold text-base">Kaşe Onaylandı!</span>
-                  <span className="text-muted-foreground text-xs mt-0.5">+1 kaşe eklendi</span>
+                  <span className="text-success font-semibold text-base">Puan Onaylandı!</span>
+                  <span className="text-muted-foreground text-xs mt-0.5">+1 puan eklendi</span>
                 </div>
               ) : status === "error" ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-destructive/10">

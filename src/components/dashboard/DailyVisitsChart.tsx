@@ -40,10 +40,11 @@ const periodData = {
 
 interface DailyVisitsChartProps {
   period?: PeriodType;
+  customData?: { label: string; data: { time: string; visits: number; current: number }[] };
 }
 
-export const DailyVisitsChart = ({ period = "daily" }: DailyVisitsChartProps) => {
-  const chartData = periodData[period];
+export const DailyVisitsChart = ({ period = "daily", customData }: DailyVisitsChartProps) => {
+  const chartData = customData ?? periodData[period];
   const gradientId = `visitGradient-${period}`;
 
   return (

@@ -444,7 +444,7 @@ export const VisitsChart = () => {
               onClick={() => handleChartExpand("distribution")}
               className="p-1 rounded hover:bg-muted/50 transition-colors"
             >
-              <Maximize2 className="w-4 h-4 text-muted-foreground" />
+            <Maximize2 className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
           <p className="text-xs lg:text-sm font-medium text-muted-foreground tracking-wide uppercase mb-3 h-5 flex items-center">
@@ -778,7 +778,7 @@ export const VisitsChart = () => {
                           : selectedPointIndex !== null && chartDataToDisplay[selectedPointIndex]
                           ? chartDataToDisplay[selectedPointIndex].time
                           : chartDataToDisplay.find(d => d.isPeak)?.time || "N/A"}
-                      </p>
+                  </p>
                       <p className="text-sm text-muted-foreground mt-1">
                         {hoverPosition 
                           ? hoverPosition.value

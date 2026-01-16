@@ -10,10 +10,11 @@ const periodData = {
 
 interface LoyaltyDonutProps {
   period?: PeriodType;
+  customData?: { returning: number; new: number };
 }
 
-export const LoyaltyDonut = ({ period = "daily" }: LoyaltyDonutProps) => {
-  const dataValues = periodData[period];
+export const LoyaltyDonut = ({ period = "daily", customData }: LoyaltyDonutProps) => {
+  const dataValues = customData ?? periodData[period];
   const data = [
     { name: "Geri Dönen", value: dataValues.returning, color: "hsl(72 22% 38%)" },
     { name: "Yeni", value: dataValues.new, color: "hsl(42 55% 55%)" },

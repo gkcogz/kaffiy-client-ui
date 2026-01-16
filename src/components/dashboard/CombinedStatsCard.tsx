@@ -43,7 +43,7 @@ export const CombinedStatsCard = () => {
   ];
 
   const activities: ActivityItem[] = [
-    { label: "Kaşe Basıldı", value: 23, icon: Stamp },
+    { label: "Puan Kullanıldı", value: 23, icon: Stamp },
     { label: "Ödül Kullanıldı", value: 4, icon: Gift },
     { label: "QR Tarama", value: 31, icon: QrCode },
   ];
